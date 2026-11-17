@@ -10,7 +10,7 @@ Stack: Next.js 15 App Router, React 19, TypeScript strict, Tailwind CSS v4, Zod,
 
 Security: Zero API keys client-side, sliding-window rate limiter, CSP/HSTS headers, Zod on every input, prompt injection defense with XML delimiter isolation.
 
-Testing: 96 tests across 15 suites, 98% line coverage, WCAG 2.2 AA via axe-core, full keyboard navigation.
+Testing: 180 automated tests across 17 test suites, 99.24% line coverage, 0 axe-core violations (WCAG 2.2 AA compliant), full keyboard navigation.
 
 Repository: https://github.com/SabarishR08/airwise-urban-air-quality-assistant
 Live: https://airwise-urban-air-quality-assistant.vercel.app
