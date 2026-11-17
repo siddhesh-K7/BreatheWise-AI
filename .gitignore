@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing and Coverage
+/coverage/
+*.lcov
+test-results/
+playwright-report/
+
+# Next.js Build Outputs
+/.next/
+/out/
+build/
+dist/
+
+# Environment Variables and Credentials
+.env*
+!.env.example
+*.pem
+*.key
+*.vault
+
+# Recordings & Media (Strictly Gitignored to keep repo < 10 MB)
+/recordings/
+*.mp4
+*.webm
+*.mov
+*.mkv
+*.avi
+*.png.bak
+
+# Debug Logs & OS Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+Thumbs.db
+*.tsbuildinfo
+next-env.d.ts.bak
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
