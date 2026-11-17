@@ -93,9 +93,15 @@ export const structuredPlanOutputSchema = z.object({
         costTier: z.preprocess((val) => {
           if (typeof val === 'string') {
             const v = val.toLowerCase().replace(/[\s-]/g, '_');
-            if (v.includes('free') || v.includes('zero') || v.includes('0')) return 'free';
-            if (v.includes('over') || v.includes('high') || v.includes('tier3')) return 'over_inr_500';
-            if (v.includes('under') || v.includes('low') || v.includes('500') || v.includes('tier2')) return 'under_inr_500';
+            if (v.includes('free') || v.includes('zero') || v.includes('0')) {
+              return 'free';
+            }
+            if (v.includes('over') || v.includes('high') || v.includes('tier3')) {
+              return 'over_inr_500';
+            }
+            if (v.includes('under') || v.includes('low') || v.includes('500') || v.includes('tier2')) {
+              return 'under_inr_500';
+            }
           }
           return 'free';
         }, z.enum(['free', 'under_inr_500', 'over_inr_500'])),
@@ -113,8 +119,12 @@ export const structuredPlanOutputSchema = z.object({
         category: z.preprocess((val) => {
           if (typeof val === 'string') {
             const v = val.toLowerCase();
-            if (v === 'transport' || v === 'transit') return 'commute';
-            if (['commute', 'cooking', 'waste', 'energy'].includes(v)) return v;
+            if (v === 'transport' || v === 'transit') {
+              return 'commute';
+            }
+            if (['commute', 'cooking', 'waste', 'energy'].includes(v)) {
+              return v;
+            }
           }
           return 'commute';
         }, z.enum(['commute', 'cooking', 'waste', 'energy'])),
@@ -130,16 +140,26 @@ export const structuredPlanOutputSchema = z.object({
         group: z.preprocess((val) => {
           if (typeof val === 'string') {
             const v = val.toLowerCase();
-            if (v.includes('child') || v.includes('infant')) return 'infants_children';
-            if (v.includes('elder') || v.includes('sensitiv') || v.includes('vulnerab')) return 'elderly_sensitive';
-            if (v.includes('adult')) return 'adults';
+            if (v.includes('child') || v.includes('infant')) {
+              return 'infants_children';
+            }
+            if (v.includes('elder') || v.includes('sensitiv') || v.includes('vulnerab')) {
+              return 'elderly_sensitive';
+            }
+            if (v.includes('adult')) {
+              return 'adults';
+            }
           }
           return 'adults';
         }, z.enum(['infants_children', 'adults', 'elderly_sensitive'])),
         advisory: z.string(),
         criticalRestrictions: z.preprocess((val) => {
-          if (Array.isArray(val)) return val.map(String);
-          if (typeof val === 'string') return [val];
+          if (Array.isArray(val)) {
+            return val.map(String);
+          }
+          if (typeof val === 'string') {
+            return [val];
+          }
           return ['Minimize outdoor exertion during peak smog intervals'];
         }, z.array(z.string())),
       })
