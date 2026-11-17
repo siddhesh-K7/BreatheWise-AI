@@ -76,27 +76,33 @@ const mockAiPayload = {
 };
 
 let callCount = 0;
+let lastPrompt = '';
+
+const mockModelInstance = {
+  generateContent: async (prompt: string) => {
+    lastPrompt = prompt;
+    callCount++;
+    if (callCount === 1) {
+      // Attempt 1: return malformed string to exercise 1-shot retry branch
+      return { response: { text: () => 'invalid-json{' } };
+    }
+    return { response: { text: () => JSON.stringify(mockAiPayload) } };
+  },
+  generateContentStream: async () => ({
+    stream: [
+      { text: () => 'AirWise ' },
+      { text: () => 'live answer from Gemini' },
+    ],
+  }),
+};
 
 vi.mock('@google/generative-ai', () => {
   return {
-    GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
-      getGenerativeModel: () => ({
-        generateContent: async () => {
-          callCount++;
-          if (callCount === 1) {
-            // Attempt 1: return malformed string to exercise 1-shot retry branch
-            return { response: { text: () => 'invalid-json{' } };
-          }
-          return { response: { text: () => JSON.stringify(mockAiPayload) } };
-        },
-        generateContentStream: async () => ({
-          stream: [
-            { text: () => 'AirWise ' },
-            { text: () => 'live answer from Gemini' },
-          ],
-        }),
-      }),
-    })),
+    GoogleGenerativeAI: class {
+      getGenerativeModel() {
+        return mockModelInstance;
+      }
+    },
   };
 });
 
@@ -174,5 +180,53 @@ describe('Gemini Service Mocked Model Tests', () => {
       text += new TextDecoder().decode(value);
     }
     expect(text).toContain('live answer from Gemini');
+  });
+
+  it('incorporates station cross-check and fire telemetry into Gemini prompt context', async () => {
+    const { generateStructuredPlan } = await import('@/services/gemini-service');
+
+    const mockFire = {
+      isAvailable: true,
+      count24h: 350,
+      count72h: 1200,
+      radiusKm: 500,
+      isSeasonalBaseline: false,
+      advisoryText: 'Active fires',
+    };
+
+    const mockCrossCheck = {
+      modelAqi: 220,
+      stationReading: {
+        isAvailable: true,
+        stationName: 'Anand Vihar CPCB',
+        stationAqi: 295,
+        dominantPollutant: 'PM2.5',
+        timestamp: new Date().toISOString(),
+        distanceKm: 8.5,
+      },
+      disagreementDetected: true,
+      deviation: 75,
+      effectiveSafetyAqi: 295,
+    };
+
+    // Use unique coordinates to bypass cache
+    const testLocation = { ...mockLocation, latitude: 29.11, longitude: 77.88 };
+
+    await generateStructuredPlan(
+      testLocation,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'en',
+      mockFire,
+      mockCrossCheck
+    );
+
+    expect(lastPrompt).toContain('Ground Station Cross-Check');
+    expect(lastPrompt).toContain('Anand Vihar CPCB');
+    expect(lastPrompt).toContain('DISAGREEMENT DETECTED');
+    expect(lastPrompt).toContain('safety AQI 295');
+    expect(lastPrompt).toContain('Regional Active Fires (500km)');
   });
 });

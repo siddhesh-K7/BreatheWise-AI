@@ -1,12 +1,12 @@
-Google Gemini 1.5 Flash is integrated in src/services/gemini-service.ts:
+Google Gemini Flash (gemini-3.8-flash) is integrated in src/services/gemini-service.ts:
 
 1. generateStructuredPlan()
 File: src/services/gemini-service.ts
-Receives location, household profile, Open-Meteo telemetry, NASA FIRMS fires, and WAQI data. Calls gemini-1.5-flash with responseMimeType: application/json to create schema-enforced plans (diurnal routines, indoor hacks, sustainable alternatives, age-group health guidance, winter smog advisory). Validated with Zod structuredPlanOutputSchema. Includes 1-shot retry and deterministic fallback (src/services/fallback-plan.ts) on quota exhaustion.
+Receives location, profile, Open-Meteo telemetry, NASA FIRMS fires (500km), and WAQI ground station cross-check. Calls gemini-3.8-flash with responseMimeType: application/json to create schema-enforced plans (diurnal routines, indoor hacks, sustainable alternatives, health guidance, winter smog advisory). Validated with Zod structuredPlanOutputSchema. Includes 1-shot retry and deterministic fallback (src/services/fallback-plan.ts) on quota exhaustion.
 
 2. streamAirWiseChat()
 File: src/services/gemini-service.ts
-Accepts user query with current AQI and city context. Streams tokens via ReadableStream. User input is sanitized via sanitizeUserPrompt() in src/validators/schemas.ts to strip XML/HTML tags and defend against prompt injections.
+Accepts user query with AQI and city context. Streams tokens via ReadableStream. User input is sanitized via sanitizeUserPrompt() in src/validators/schemas.ts to strip XML/HTML tags and defend against prompt injections.
 
 3. Language Localization
 Prompts dynamically enforce English, Tamil, or Hindi output.

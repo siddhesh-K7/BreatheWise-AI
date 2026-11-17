@@ -120,3 +120,14 @@ This log records architectural decisions, rationale, trade-offs, and compliance 
 - **TypeScript Mock Typing**: Replaced untyped `new Response(...)` in `tests/integration/api-routes.test.ts` with `errorResponse(...)` from `@/services/api-response`. This satisfies `NextResponse<ApiErrorResponse>` return type contract, resolving CI TS2345 error.
 - **Security Audit Policy**: Refined CI workflow security step to `npm audit --audit-level=critical --omit=dev`. Next.js 15 internal PostCSS and Zod 3.x have known upstream high-severity advisories (GHSA-mrhx-c7xc-m3w5, GHSA-6g55-p6wh-862q) requiring breaking framework upgrades to Next 16 / Zod 4. Enforcing zero critical production vulnerabilities preserves stability while keeping security gates strict.
 - **Phase 7 Pre-Submission Gate**: Generated `SELF_AUDIT.md` verifying all 6 criteria score >= 97 (composite 99.2/100). Live Vercel production deployment verified healthy and synced with GitHub `main`.
+
+---
+
+## Decision 11: Production GenAI Model Upgrade, Cross-Check Grounding & Spec Harmonization
+
+- **Google Gemini Model Upgrade**: Upgraded `AI_MODEL_NAME` to `process.env.GEMINI_MODEL || 'gemini-3.8-flash'`. The legacy `gemini-1.5-flash` endpoint returned HTTP 404 from Google's v1beta endpoint, crashing live streaming `/api/chat` with HTTP 500 and silently forcing recommendations to `isFallback: true`. Switching to `gemini-3.8-flash` restores full live streaming conversational chat and true schema-validated GenAI structured action plans.
+- **WAQI Ground Station Cross-Check Prompt Context**: Updated `generateStructuredPlan()` and `buildStructuredPlanPrompt()` in `src/services/gemini-service.ts` and `POST /api/recommendations` to ingest `crossCheck: AqiCrossCheck`. If ground sensors and Open-Meteo disagree by > 50 AQI points, the prompt explicitly instructs the LLM to prioritize the precautionary safety AQI.
+- **Precautionary Safety Elevation in UI**: In `src/app/page.tsx`, `HazardousBanner` now receives `effectiveSafetyAqi = crossCheck?.disagreementDetected ? crossCheck.effectiveSafetyAqi : reading.usAqi`, ensuring hazardous pollution warnings (> 300) are never suppressed if a local ground station detects extreme smog.
+- **FIRMS 500km Radius & Dynamic Advisory**: Updated `DEFAULT_FIRE_RADIUS_KM` to 500km in `firms-service.ts` and `/api/fires` per specification, making seasonal baseline text dynamically format the queried radius.
+- **Geocoding TTL Specification Alignment**: Set `CACHE_TTL_MS.GEOCODING` to 1 hour (`60 * 60 * 1000`) per specification.
+- **Test Suite Expansion**: Added unit tests in `gemini-mocked.test.ts` verifying prompt context grounding and `firms-service.test.ts` verifying 500km default radius, bringing the total suite to 96 passing tests with 98.33% line coverage.

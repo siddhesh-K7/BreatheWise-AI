@@ -84,8 +84,17 @@ export default function Home() {
           </div>
         )}
 
-        {/* Hazardous Banner (AQI > 300) */}
-        {reading && <HazardousBanner aqi={reading.usAqi} t={t} />}
+        {/* Hazardous Banner (AQI > 300, elevated if sensor disagreement detected) */}
+        {reading && (
+          <HazardousBanner
+            aqi={
+              crossCheck?.disagreementDetected
+                ? crossCheck.effectiveSafetyAqi
+                : reading.usAqi
+            }
+            t={t}
+          />
+        )}
 
         {/* Meteorological Inversion & Air Quality Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

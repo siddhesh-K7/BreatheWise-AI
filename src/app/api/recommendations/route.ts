@@ -5,6 +5,7 @@
 
 import { fetchAirQualityAndWeather } from '@/services/aqi-service';
 import { fetchActiveFiresSummary } from '@/services/firms-service';
+import { crossCheckAqi, fetchWaqiStationReading } from '@/services/waqi-service';
 import { errorResponse, successResponse } from '@/services/api-response';
 import { generateStructuredPlan } from '@/services/gemini-service';
 import { calculateImpact } from '@/services/impact-calculator';
@@ -45,11 +46,17 @@ export async function POST(req: Request) {
   const { location, profile, language } = validation.data;
 
   try {
-    const [{ reading, weather }, fireSummary] = await Promise.all([
+    const [{ reading, weather }, stationReading, fireSummary] = await Promise.all([
       fetchAirQualityAndWeather(location.latitude, location.longitude),
+      fetchWaqiStationReading(location.latitude, location.longitude),
       fetchActiveFiresSummary(location.latitude, location.longitude),
     ]);
-    const impact = calculateImpact(reading.pm25, profile);
+    const crossCheck = crossCheckAqi(reading.usAqi, stationReading);
+    const effectivePm25 =
+      crossCheck.disagreementDetected && crossCheck.effectiveSafetyAqi > reading.usAqi
+        ? reading.pm25 * (crossCheck.effectiveSafetyAqi / reading.usAqi)
+        : reading.pm25;
+    const impact = calculateImpact(effectivePm25, profile);
     const plan = await generateStructuredPlan(
       location,
       profile,
@@ -57,7 +64,8 @@ export async function POST(req: Request) {
       weather,
       impact,
       language,
-      fireSummary
+      fireSummary,
+      crossCheck
     );
 
     return successResponse(plan);

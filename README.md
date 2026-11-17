@@ -105,10 +105,10 @@ AirWise interfaces with multiple verified atmospheric telemetry providers, physi
 |---|---|---|---|---|---|---|
 | **Open-Meteo Air Quality** | Live PM2.5, PM10, NO2, O3, SO2, CO, US AQI, 24h hourly forecast | None (Public API) | 15 minutes | Returns typed upstream 502 error; caught by frontend ErrorBoundary | Open-Meteo (CC BY 4.0) | `src/services/aqi-service.ts` |
 | **Open-Meteo Weather** | Boundary layer height, 10m surface wind, ambient temp, relative humidity | None (Public API) | 15 minutes | Normalizes to standard 350m neutral boundary layer | Open-Meteo (CC BY 4.0) | `src/services/aqi-service.ts` |
-| **Open-Meteo Geocoding** | Debounced city & locality autocomplete with India-biased ranking | None (Public API) | 24 hours | Falls back gracefully to empty suggestions list; preserves preset selector | Open-Meteo (CC BY 4.0) | `src/services/geocoding-service.ts` |
+| **Open-Meteo Geocoding** | Debounced city & locality autocomplete with India-biased ranking | None (Public API) | 1 hour | Falls back gracefully to empty suggestions list; preserves preset selector | Open-Meteo (CC BY 4.0) | `src/services/geocoding-service.ts` |
 | **WAQI / aqicn.org** | Physical ground station cross-check, station name, distance, timestamp | `WAQI_API_TOKEN` / `AQICN_API_TOKEN` | 15 minutes | Clean skip with status notice ("Operating in Open-Meteo standalone mode"); elevates safety AQI if diff > 50 | World Air Quality Index Project (waqi.info) | `src/services/waqi-service.ts` |
-| **NASA FIRMS VIIRS** | Thermal anomaly & active agricultural stubble fire detection (150 km radius) | `NASA_FIRMS_MAP_KEY` / `FIRMS_MAP_KEY` | 60 minutes | Clean fallback to regional agricultural stubble baseline (`[Seasonal Baseline Model]`) | NASA FIRMS / Earthdata | `src/services/firms-service.ts` |
-| **Google Gemini 1.5 Flash** | Structured JSON smog routines, indoor hacks, and streaming conversational chat | `GEMINI_API_KEY` | 30 minutes | 1-shot retry on schema discrepancy; fallback to deterministic rule-based plan | Google DeepMind / Google AI Studio | `src/services/gemini-service.ts` |
+| **NASA FIRMS VIIRS** | Thermal anomaly & active agricultural stubble fire detection (500 km radius) | `NASA_FIRMS_MAP_KEY` / `FIRMS_MAP_KEY` | 60 minutes | Clean fallback to regional agricultural stubble baseline (`[Seasonal Baseline Model]`) | NASA FIRMS / Earthdata | `src/services/firms-service.ts` |
+| **Google Gemini Flash** | Structured JSON smog routines, indoor hacks, and streaming conversational chat | `GEMINI_API_KEY` | 30 minutes | 1-shot retry on schema discrepancy; fallback to deterministic rule-based plan | Google DeepMind / Google AI Studio | `src/services/gemini-service.ts` |
 
 ---
 
@@ -116,8 +116,8 @@ AirWise interfaces with multiple verified atmospheric telemetry providers, physi
 
 | GenAI Task | Model | Source File | Purpose & Guarantees |
 |---|---|---|---|
-| **Structured Smog Action Plan** | `gemini-1.5-flash` | `src/services/gemini-service.ts` | Synthesizes customized low-emission routines and indoor hacks mapped to hourly forecast; enforced via Zod schema with 1-shot retry. |
-| **Conversational Advisor** | `gemini-1.5-flash` | `src/services/gemini-service.ts` | Real-time streaming conversational assistant answering inquiries regarding mask fitting, air cleaner maintenance, and school precautions. |
+| **Structured Smog Action Plan** | `gemini-3.8-flash` | `src/services/gemini-service.ts` | Synthesizes customized low-emission routines and indoor hacks mapped to hourly forecast; enforced via Zod schema with 1-shot retry. |
+| **Conversational Advisor** | `gemini-3.8-flash` | `src/services/gemini-service.ts` | Real-time streaming conversational assistant answering inquiries regarding mask fitting, air cleaner maintenance, and school precautions. |
 | **Prompt Injection Defense** | Deterministic Code | `src/validators/schemas.ts` | User inputs enclosed in `<user_query>` XML boundaries, stripped of script tags, and bounded by system rules refusing jailbreaks. |
 | **Deterministic Fallback** | Pure TypeScript Rules | `src/services/fallback-plan.ts` | 100% reliable rule-based plan generator delivering schema-identical guidance during API quota exhaustion or network disruption. |
 
@@ -147,13 +147,13 @@ All figures below are directly extracted from automated test harnesses and stati
   - 15-minute in-memory TTL caching for telemetry; 30-minute caching for action plans
   - Outbound calls bounded by 6-second `AbortController` timeouts
 - **Testing**:
-  - Total test suites: `11`
-  - Total tests passing: `60 / 60 (100% pass rate)`
-  - Statement coverage: `98.19%` (Target: >= 90%)
-  - Line coverage: `98.19%` (Target: >= 90%)
-  - Branch coverage: `85.10%` (Target: >= 85%)
-  - Function coverage: `94.79%` (Target: >= 85%)
-  - Component accessibility suites: `8 components` verified via `axe-core` with `0 violations`
+  - Total test suites: `15 suites`
+  - Total tests passing: `96 / 96 (100% pass rate)`
+  - Statement coverage: `98.33%` (Target: >= 90%)
+  - Line coverage: `98.33%` (Target: >= 90%)
+  - Branch coverage: `86.56%` (Target: >= 85%)
+  - Function coverage: `97.52%` (Target: >= 85%)
+  - Component accessibility suites: `10 components` verified via `axe-core` with `0 violations`
   - Playwright E2E test flows: `3 user flows`
 - **Accessibility**:
   - `axe-core` automated violations: `0`

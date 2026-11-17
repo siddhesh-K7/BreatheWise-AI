@@ -22,6 +22,12 @@ describe('NASA FIRMS Active Fire Telemetry Unit Tests', () => {
     expect(summary.advisoryText).toContain('Seasonal Baseline Model');
   });
 
+  it('defaults to 500km radius and incorporates radius in advisory text', async () => {
+    const summary = await fetchActiveFiresSummary(28.61, 77.23);
+    expect(summary.radiusKm).toBe(500);
+    expect(summary.advisoryText).toContain('within 500 km');
+  });
+
   it('provides lower baseline fire count for non-northern agricultural belts', () => {
     const baseline = getSeasonalFireBaseline(13.08, 80.27, 150); // Chennai
     expect(baseline.count24h).toBe(24);

@@ -2,15 +2,15 @@ Every winter, millions across Indian cities breathe air that is hazardous by any
 
 AirWise generates a personalized action plan from that number.
 
-It pulls real-time atmospheric data from Open-Meteo's CAMS model and cross-checks it against the nearest WAQI ground monitoring station. If the two disagree by more than 50 AQI points, it alerts the user and uses the higher reading for safety guidance. NASA FIRMS satellite data feeds regional agricultural fire counts into the winter smog advisory. All of this context goes to Google Gemini 1.5 Flash, which generates a structured JSON plan: time-blocked daily routines tied to hourly PM2.5 forecasts, indoor air hacks ranked by cost (free to under INR 500 to over INR 500), and sustainable alternatives with quantified CO2 impact.
+It pulls real-time atmospheric data from Open-Meteo's CAMS model and cross-checks it against the nearest WAQI ground monitoring station. If the two disagree by more than 50 AQI points, it alerts the user and uses the higher reading for safety guidance. NASA FIRMS satellite data feeds regional agricultural fire counts into the winter smog advisory. All of this context goes to Google Gemini Flash, which generates a structured JSON plan: time-blocked daily routines tied to hourly PM2.5 forecasts, indoor air hacks ranked by cost (free to under INR 500 to over INR 500), and sustainable alternatives with quantified CO2 impact.
 
 Health impact numbers are deterministic: Berkeley Earth cigarette equivalence (22 ug/m3 per cigarette per day) and India GHG Programme transit emission factors. No fuzzy claims. The what-if simulator updates exposure estimates in real time as users toggle commute mode.
 
-Stack: Next.js 15 App Router, React 19, TypeScript strict, Tailwind CSS v4, Zod, Google Gemini 1.5 Flash, Open-Meteo, WAQI, NASA FIRMS.
+Stack: Next.js 15 App Router, React 19, TypeScript strict, Tailwind CSS v4, Zod, Google Gemini Flash, Open-Meteo, WAQI, NASA FIRMS.
 
 Security: Zero API keys client-side, sliding-window rate limiter, CSP/HSTS headers, Zod on every input, prompt injection defense with XML delimiter isolation.
 
-Testing: 88 tests, 90%+ line coverage, WCAG 2.2 AA via jest-axe, full keyboard navigation.
+Testing: 96 tests across 15 suites, 98% line coverage, WCAG 2.2 AA via axe-core, full keyboard navigation.
 
 Repository: https://github.com/SabarishR08/airwise-urban-air-quality-assistant
 Live: https://airwise-urban-air-quality-assistant.vercel.app

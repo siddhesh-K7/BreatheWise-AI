@@ -110,7 +110,7 @@ export const METRO_PRESETS = [
 export const CACHE_TTL_MS = {
   AQI_DATA: 15 * 60 * 1000, // 15 minutes
   RECOMMENDATIONS: 30 * 60 * 1000, // 30 minutes
-  GEOCODING: 24 * 60 * 60 * 1000, // 24 hours
+  GEOCODING: 60 * 60 * 1000, // 1 hour TTL per specification
 } as const;
 
 /**

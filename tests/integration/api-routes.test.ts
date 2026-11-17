@@ -152,6 +152,15 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     expect(json.success).toBe(true);
     expect(json.data.dailyRoutines).toBeDefined();
     expect(json.data.quantifiedImpact).toBeDefined();
+
+    vi.spyOn(aqiService, 'fetchAirQualityAndWeather').mockRejectedValueOnce(new Error('Downstream failure'));
+    const reqErr = new Request('https://test.local/api/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const resErr = await planHandler(reqErr);
+    expect(resErr.status).toBe(500);
   });
 
   it('POST /api/chat handles rate limits, invalid JSON, and invalid payloads', async () => {

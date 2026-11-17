@@ -7,6 +7,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { GEMINI_TOKEN_BUDGETS } from '@/config/constants';
 import {
   AirWisePlan,
+  AqiCrossCheck,
   AqiReading,
   FirmsFireSummary,
   LocationQuery,
@@ -19,7 +20,7 @@ import { sanitizeUserPrompt, structuredPlanOutputSchema } from '@/validators/sch
 import { appCache } from './cache';
 import { generateDeterministicFallbackPlan } from './fallback-plan';
 
-const AI_MODEL_NAME = 'gemini-1.5-flash';
+const AI_MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
 function getGeminiClient(): GoogleGenerativeAI | null {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -39,9 +40,13 @@ export async function generateStructuredPlan(
   weather: WeatherContext,
   impact: QuantifiedImpact,
   language: SupportedLanguage,
-  fireSummary?: FirmsFireSummary
+  fireSummary?: FirmsFireSummary,
+  crossCheck?: AqiCrossCheck
 ): Promise<AirWisePlan> {
-  const cacheKey = buildPlanCacheKey(location, profile, reading.usAqi, language);
+  const effectiveAqi = crossCheck?.disagreementDetected
+    ? crossCheck.effectiveSafetyAqi
+    : reading.usAqi;
+  const cacheKey = buildPlanCacheKey(location, profile, effectiveAqi, language);
   const cached = appCache.get<AirWisePlan>(cacheKey);
   if (cached) {
     return cached;
@@ -58,7 +63,8 @@ export async function generateStructuredPlan(
     reading,
     weather,
     language,
-    fireSummary
+    fireSummary,
+    crossCheck
   );
   const plan = await executePlanGenerationWithRetry(
     client,
@@ -129,15 +135,22 @@ function buildStructuredPlanPrompt(
   read: AqiReading,
   weath: WeatherContext,
   lang: SupportedLanguage,
-  fire?: FirmsFireSummary
+  fire?: FirmsFireSummary,
+  crossCheck?: AqiCrossCheck
 ): string {
+  const fireRadius = fire?.radiusKm ?? 500;
   const fireText = fire
-    ? `Regional Active Fires (150km): ${fire.count24h} in 24h, ${fire.count72h} in 72h (${fire.isSeasonalBaseline ? 'Seasonal Baseline' : 'Live FIRMS'})`
+    ? `Regional Active Fires (${fireRadius}km): ${fire.count24h} in 24h, ${fire.count72h} in 72h (${fire.isSeasonalBaseline ? 'Seasonal Baseline' : 'Live FIRMS'})`
     : 'Regional Fires: Seasonal agricultural burning season';
+
+  const stationText = crossCheck?.stationReading?.isAvailable
+    ? `Ground Station Cross-Check: ${crossCheck.stationReading.stationName || 'Nearest Ground Station'} reported AQI ${crossCheck.stationReading.stationAqi} vs Model AQI ${crossCheck.modelAqi} (Delta: ${crossCheck.deviation})${crossCheck.disagreementDetected ? ` [DISAGREEMENT DETECTED: Discrepancy > 50 points! Enforcing higher safety AQI ${crossCheck.effectiveSafetyAqi} for guidance.]` : ' [Model and Station agree]'}`
+    : `Ground Station Cross-Check: Standalone model (${crossCheck?.stationReading?.statusReason || 'Ground station telemetry unconfigured'})`;
 
   return `You are AirWise Engine, an expert urban air quality action planner.
 Location: ${loc.cityName} (${loc.latitude.toFixed(2)}, ${loc.longitude.toFixed(2)})
 Current US AQI: ${read.usAqi} (PM2.5: ${read.pm25} ug/m3, PM10: ${read.pm10} ug/m3)
+${stationText}
 Meteorology: Temp ${weath.temperatureC}C, Wind ${weath.windSpeedKmh} km/h, Boundary Layer ${weath.boundaryLayerMeters}m, Inversion: ${weath.isInversionActive}
 ${fireText}
 Household: Children: ${prof.hasChildren}, Elderly: ${prof.hasElderly}, Sensitive: ${prof.respiratorySensitivity}, Commute: ${prof.commuteMode} (${prof.dailyCommuteKm} km/day), Purifier: ${prof.hasPurifier}, Fuel: ${prof.cookingFuel}

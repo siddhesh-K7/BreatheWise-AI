@@ -51,10 +51,10 @@ This document contains real, measured engineering metrics captured directly from
 | Metric | Measured Result | Enforced Threshold | Status |
 |---|---|---|---|
 | **Total Automated Test Suites** | **15 suites** | All pass | **PASS** |
-| **Total Test Cases** | **94 tests** | 100% pass | **PASS** |
-| **Statement Coverage** | **98.15%** | >= 90% | **PASS** |
-| **Line Coverage** | **98.15%** | >= 90% | **PASS** |
-| **Branch Coverage** | **85.94%** | >= 85% | **PASS** |
+| **Total Test Cases** | **96 tests** | 100% pass | **PASS** |
+| **Statement Coverage** | **98.33%** | >= 90% | **PASS** |
+| **Line Coverage** | **98.33%** | >= 90% | **PASS** |
+| **Branch Coverage** | **86.56%** | >= 85% | **PASS** |
 | **Function Coverage** | **97.52%** | >= 85% | **PASS** |
 | **Automated Component a11y Tests** | **10 components** | 0 violations | **PASS** |
 | **Playwright E2E User Flows** | **3 flows** | Completed | **PASS** |
@@ -66,9 +66,9 @@ This document contains real, measured engineering metrics captured directly from
 4. `tests/unit/cache-and-rate-limiter.test.ts` (4 tests) — MemoryCache TTL, spatial coordinate quantization, sliding window rate limiter, IP extraction.
 5. `tests/unit/fallback-plan.test.ts` (3 tests) — Deterministic fallback plans for English, Tamil, and Hindi; cost tier coverage.
 6. `tests/unit/gemini-service.test.ts` (2 tests) — Missing key offline resilience for plans and chat.
-7. `tests/unit/gemini-mocked.test.ts` (1 test) — Mocked Gemini client retry and stream generation.
-8. `tests/unit/geocoding-service.test.ts` (6 tests) — Debounced lookup, India-biased sorting, TTL caching, timeout degradation.
-9. `tests/unit/firms-service.test.ts` (5 tests) — Seasonal stubble baseline, live FIRMS CSV parser, 500/timeout resilience.
+7. `tests/unit/gemini-mocked.test.ts` (2 tests) — Mocked Gemini client retry, stream generation, and cross-check/fire prompt context grounding.
+8. `tests/unit/geocoding-service.test.ts` (6 tests) — Debounced lookup, India-biased sorting, 1-hour TTL caching, timeout degradation.
+9. `tests/unit/firms-service.test.ts` (6 tests) — Seasonal stubble baseline (500km default), dynamic radius, live FIRMS CSV parser, 500/timeout resilience.
 10. `tests/unit/waqi-service.test.ts` (10 tests) — Physical station ingestion, token skip, threshold disagreement (>50 delta), memory cache hit.
 11. `tests/unit/station-and-search.test.tsx` (7 tests) — CitySearchBar debounce, dropdown selection, StationCrossCheckCard warning banners.
 12. `tests/unit/components.test.tsx` (9 tests) — Presentation components, button variants, badge tiers, WhatIfSimulator toggles, ProfileForm inputs, ErrorBoundary.

@@ -46,7 +46,7 @@ export async function GET(req: Request) {
   }
 
   const radiusParam = searchParams.get('radius');
-  const radiusKm = radiusParam ? parseInt(radiusParam, 10) : 150;
+  const radiusKm = radiusParam ? parseInt(radiusParam, 10) : 500;
 
   try {
     const fireSummary = await fetchActiveFiresSummary(coords.lat, coords.lon, radiusKm);

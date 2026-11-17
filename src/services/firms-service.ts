@@ -8,10 +8,10 @@ import { FirmsFireSummary } from '@/domain/types';
 import { executeFetchWithTimeout } from './api-response';
 import { appCache } from './cache';
 
-const DEFAULT_FIRE_RADIUS_KM = 150;
+const DEFAULT_FIRE_RADIUS_KM = 500;
 
 /**
- * Fetches regional active thermal anomaly / stubble fire count within 150 km radius.
+ * Fetches regional active thermal anomaly / stubble fire count within 500 km radius.
  * If NASA FIRMS MAP_KEY is absent or unavailable, falls back to seasonal stubble baseline model.
  */
 export async function fetchActiveFiresSummary(
@@ -50,7 +50,7 @@ export async function fetchActiveFiresSummary(
 export function getSeasonalFireBaseline(
   lat: number,
   lon: number,
-  radiusKm: number
+  radiusKm: number = DEFAULT_FIRE_RADIUS_KM
 ): FirmsFireSummary {
   const isNorthernPlains = lat >= 25.0 && lat <= 32.5 && lon >= 74.0 && lon <= 82.5;
 
@@ -61,8 +61,7 @@ export function getSeasonalFireBaseline(
       count72h: 1385,
       radiusKm,
       isSeasonalBaseline: true,
-      advisoryText:
-        'Active Stubble Burning Belt: 428 thermal hotspots detected within 150 km over 24h (1,385 in 72h) [Seasonal Baseline Model].',
+      advisoryText: `Active Stubble Burning Belt: 428 thermal hotspots detected within ${radiusKm} km over 24h (1,385 in 72h) [Seasonal Baseline Model].`,
     };
   }
 
@@ -72,8 +71,7 @@ export function getSeasonalFireBaseline(
     count72h: 72,
     radiusKm,
     isSeasonalBaseline: true,
-    advisoryText:
-      'Low-to-moderate agricultural fire activity: 24 thermal detections within 150 km over 24h [Seasonal Baseline Model].',
+    advisoryText: `Low-to-moderate agricultural fire activity: 24 thermal detections within ${radiusKm} km over 24h [Seasonal Baseline Model].`,
   };
 }
 
