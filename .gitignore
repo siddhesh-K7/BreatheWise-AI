@@ -25,12 +25,15 @@ dist/
 
 # Recordings & Media (Strictly Gitignored to keep repo < 10 MB)
 /recordings/
+/screenshots/
 *.mp4
 *.webm
 *.mov
 *.mkv
 *.avi
-*.png.bak
+*.png
+*.jpg
+*.jpeg
 
 # Debug Logs & OS Files
 npm-debug.log*
