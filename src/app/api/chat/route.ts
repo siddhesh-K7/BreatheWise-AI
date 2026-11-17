@@ -8,6 +8,8 @@ import { streamAirWiseChat } from '@/services/gemini-service';
 import { checkRateLimit, getClientIp } from '@/services/rate-limiter';
 import { chatRequestSchema } from '@/validators/schemas';
 
+export const maxDuration = 30;
+
 /**
  * Handles POST requests initiating streaming Gemini conversational assistance.
  */

@@ -25,7 +25,7 @@ const AI_MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
 /**
  * Wraps a promise with a hard timeout to guard against hung upstream connections.
  */
-async function callWithTimeout<T>(promise: Promise<T>, timeoutMs = 6000): Promise<T> {
+async function callWithTimeout<T>(promise: Promise<T>, timeoutMs = 9000): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timer = setTimeout(() => reject(new Error(`Model timeout after ${timeoutMs}ms`)), timeoutMs);
@@ -92,12 +92,14 @@ export async function generateStructuredPlan(
     language
   );
 
-  appCache.set(cacheKey, plan, 30 * 60 * 1000);
+  // Live plans cache for 30 minutes; fallbacks cache for only 10s to recover live AI quickly
+  const ttl = plan.isFallback ? 10 * 1000 : 30 * 60 * 1000;
+  appCache.set(cacheKey, plan, ttl);
   return plan;
 }
 
 /**
- * Executes Gemini call with a 1-shot retry on schema or JSON parsing failure.
+ * Executes Gemini call across candidate models with schema validation and fallback.
  */
 async function executePlanGenerationWithRetry(
   client: GoogleGenerativeAI,
@@ -113,8 +115,8 @@ async function executePlanGenerationWithRetry(
     new Set([
       AI_MODEL_NAME,
       'gemini-3.1-flash-lite',
-      'gemini-3.8-flash',
       'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
     ])
   );
 
@@ -131,7 +133,7 @@ async function executePlanGenerationWithRetry(
 
       for (let attempt = 1; attempt <= 2; attempt++) {
         try {
-          const result = await callWithTimeout(model.generateContent(prompt), 6000);
+          const result = await callWithTimeout(model.generateContent(prompt), 9000);
           const text = result.response.text();
           const parsed = JSON.parse(text);
           const validation = structuredPlanOutputSchema.safeParse(parsed);
@@ -186,7 +188,12 @@ ${fireText}
 Household: Children: ${prof.hasChildren}, Elderly: ${prof.hasElderly}, Sensitive: ${prof.respiratorySensitivity}, Commute: ${prof.commuteMode} (${prof.dailyCommuteKm} km/day), Purifier: ${prof.hasPurifier}, Fuel: ${prof.cookingFuel}
 Language: ${lang}
 
-Output strictly valid JSON matching this schema:
+Output strictly valid JSON matching this schema with these requirements:
+- dailyRoutines: at least 2 routines (morning and evening)
+- indoorHacks: exactly 3 hacks (one for each costTier: "free", "under_inr_500", "over_inr_500")
+- sustainableAlternatives: at least 2 alternatives
+- healthGuidance: at least 2 entries
+
 {
   "summary": "1-2 sentence overview in ${lang}",
   "dailyRoutines": [{"timeBlock": "06:00-09:00", "action": "...", "rationale": "...", "emissionReduction": "...", "targetAqiCondition": "..."}],
@@ -241,8 +248,8 @@ Security Rules:
     new Set([
       AI_MODEL_NAME,
       'gemini-3.1-flash-lite',
-      'gemini-3.8-flash',
       'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
     ])
   );
 
@@ -261,7 +268,7 @@ Security Rules:
         model.generateContentStream({
           contents: [{ role: 'user', parts: [{ text: `<user_query>${safeMessage}</user_query>` }] }],
         }),
-        6000
+        9000
       );
 
       const encoder = new TextEncoder();

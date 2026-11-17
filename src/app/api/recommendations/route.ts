@@ -12,6 +12,8 @@ import { calculateImpact } from '@/services/impact-calculator';
 import { checkRateLimit, getClientIp } from '@/services/rate-limiter';
 import { planRequestSchema } from '@/validators/schemas';
 
+export const maxDuration = 30;
+
 /**
  * Handles POST requests generating customized air quality action plans.
  */
