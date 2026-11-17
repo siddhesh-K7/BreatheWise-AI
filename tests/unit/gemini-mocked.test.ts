@@ -290,7 +290,7 @@ describe('Gemini Service Mocked Model Tests', () => {
     const failoverLoc = { ...mockLocation, latitude: 31.25, longitude: 75.33 };
 
     customGetGenerativeModel = (opts: { model: string }) => {
-      if (opts.model === 'gemini-3.8-flash') {
+      if (opts.model === 'gemini-3.1-flash-lite') {
         throw new Error('Primary model 503 Overloaded');
       }
       return {
@@ -336,7 +336,7 @@ describe('Gemini Service Mocked Model Tests', () => {
     const { streamAirWiseChat } = await import('@/services/gemini-service');
 
     customGetGenerativeModel = (opts: { model: string }) => {
-      if (opts.model === 'gemini-3.8-flash') {
+      if (opts.model === 'gemini-3.1-flash-lite') {
         throw new Error('Busy');
       }
       return {
