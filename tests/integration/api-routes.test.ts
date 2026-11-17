@@ -12,6 +12,7 @@ import * as aqiService from '@/services/aqi-service';
 import * as geocodingService from '@/services/geocoding-service';
 import * as firmsService from '@/services/firms-service';
 import * as waqiService from '@/services/waqi-service';
+import { errorResponse } from '@/services/api-response';
 
 describe('Serverless API Route Handlers Integration Tests', () => {
   it('GET /api/health returns 200 and healthy service telemetry', async () => {
@@ -240,10 +241,7 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     expect(jsonValid.data.isAvailable).toBe(true);
 
     vi.spyOn(rateLimiter, 'enforceRateLimit').mockReturnValueOnce(
-      new Response(JSON.stringify({ success: false, error: { code: 'TOO_MANY_REQUESTS' } }), {
-        status: 429,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      errorResponse('Rate limit exceeded. Please wait a moment.', 'TOO_MANY_REQUESTS', 429)
     );
     const reqThrottled = new Request('https://test.local/api/fires?lat=28.61&lon=77.23');
     const resThrottled = await firesHandler(reqThrottled);
@@ -268,10 +266,7 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     expect(jsonValid.data.crossCheck).toBeDefined();
 
     vi.spyOn(rateLimiter, 'enforceRateLimit').mockReturnValueOnce(
-      new Response(JSON.stringify({ success: false, error: { code: 'TOO_MANY_REQUESTS' } }), {
-        status: 429,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      errorResponse('Rate limit exceeded. Please wait a moment.', 'TOO_MANY_REQUESTS', 429)
     );
     const reqThrottled = new Request('https://test.local/api/waqi?lat=28.61&lon=77.23');
     const resThrottled = await waqiHandler(reqThrottled);
