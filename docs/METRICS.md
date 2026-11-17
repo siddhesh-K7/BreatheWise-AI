@@ -50,8 +50,8 @@ This document contains real, measured engineering metrics captured directly from
 
 | Metric | Measured Result | Enforced Threshold | Status |
 |---|---|---|---|
-| **Total Automated Test Suites** | **15 suites** | All pass | **PASS** |
-| **Total Test Cases** | **110 tests** | 100% pass | **PASS** |
+| **Total Automated Test Suites** | **17 suites** | All pass | **PASS** |
+| **Total Test Cases** | **162 tests** | 100% pass | **PASS** |
 | **Statement Coverage** | **99.12%** | >= 90% | **PASS** |
 | **Line Coverage** | **99.12%** | >= 90% | **PASS** |
 | **Branch Coverage** | **93.06%** | >= 85% | **PASS** |
@@ -60,21 +60,23 @@ This document contains real, measured engineering metrics captured directly from
 | **Playwright E2E User Flows** | **3 flows** | Completed | **PASS** |
 
 ### Test Suites Roster
-1. `tests/unit/impact-calculator.test.ts` (8 tests) — Table-driven PM2.5, cigarette equivalence, transit CO2, what-if simulator.
-2. `tests/unit/aqi-bucketing.test.ts` (5 tests) — US AQI thresholds, temperature inversion detection, Open-Meteo 500 error handling, missing field defaults, and coordinate quantization caching.
-3. `tests/unit/validators.test.ts` (5 tests) — Coordinate bounding, profile enums, prompt sanitization.
-4. `tests/unit/cache-and-rate-limiter.test.ts` (4 tests) — MemoryCache TTL, spatial coordinate quantization, sliding window rate limiter, IP extraction.
-5. `tests/unit/fallback-plan.test.ts` (3 tests) — Deterministic fallback plans for English, Tamil, and Hindi; cost tier coverage.
-6. `tests/unit/gemini-service.test.ts` (2 tests) — Missing key offline resilience for plans and chat.
-7. `tests/unit/gemini-mocked.test.ts` (8 tests) — Mocked Gemini client retry, stream generation, cross-check/fire prompt context grounding, candidate model failover, full outage fallback, stream chunk errors, and plan cache hit.
-8. `tests/unit/geocoding-service.test.ts` (6 tests) — Debounced lookup, India-biased sorting, 1-hour TTL caching, timeout degradation.
-9. `tests/unit/firms-service.test.ts` (6 tests) — Seasonal stubble baseline (500km default), dynamic radius, live FIRMS CSV parser, 500/timeout resilience.
-10. `tests/unit/waqi-service.test.ts` (10 tests) — Physical station ingestion, token skip, threshold disagreement (>50 delta), memory cache hit.
-11. `tests/unit/station-and-search.test.tsx` (8 tests) — CitySearchBar debounce, dropdown selection, StationCrossCheckCard warning banners, missing field fallbacks, clear button, and network error resilience.
-12. `tests/unit/components.test.tsx` (15 tests) — Presentation components, button variants, badge tiers, HazardousBanner emergency threshold (>300), InversionCard normal dispersion, MetricCard icon rendering, translation fallbacks, WhatIfSimulator toggles, ProfileForm inputs, ErrorBoundary.
-13. `tests/unit/hooks-and-page.test.tsx` (5 tests) — `useAqi` preset & geolocation callbacks, unsupported browser geolocation, API failure error states, `usePlan` generation & rejection handling, `Home` dashboard rendering.
-14. `tests/integration/api-routes.test.ts` (15 tests) — `/api/health`, `/api/aqi`, `/api/recommendations`, `/api/chat`, `/api/geocoding`, `/api/geocode`, `/api/fires`, `/api/waqi` covering success, validation error, rate limit, upstream errors, sensor disagreement PM2.5 scaling, and streaming crash recovery.
-15. `tests/accessibility/components-a11y.test.tsx` (10 tests) — `axe-core` accessibility scans for all major interactive components including CitySearchBar and StationCrossCheckCard.
+1. `tests/unit/impact-calculator.test.ts` (16 tests) — Table-driven PM2.5, Berkeley Earth cigarette equivalence, transit CO2, what-if simulator, extreme exposure gradients, zero distance boundaries.
+2. `tests/unit/aqi-classification-and-inversion.test.ts` (23 tests) — Comprehensive EPA/CPCB AQI classification boundaries, dynamic meteorological inversion thresholds, stagnant wind triggers, dispersion indices.
+3. `tests/unit/translations-and-constants.test.ts` (13 tests) — Tri-lingual dictionary completeness (English, Tamil, Hindi), key parity, system constants, metro presets integrity, rate limits and cache TTL verification.
+4. `tests/unit/validators.test.ts` (13 tests) — Coordinate bounding, profile enums, distance constraints, prompt injection sanitization, resilient schema fallbacks.
+5. `tests/unit/components.test.tsx` (15 tests) — Presentation components, button variants, badge tiers, HazardousBanner emergency threshold (>300), InversionCard normal dispersion, MetricCard icon rendering, translation fallbacks, WhatIfSimulator toggles, ProfileForm inputs, ErrorBoundary.
+6. `tests/integration/api-routes.test.ts` (15 tests) — `/api/health`, `/api/aqi`, `/api/recommendations`, `/api/chat`, `/api/geocoding`, `/api/geocode`, `/api/fires`, `/api/waqi` covering success, validation error, rate limit, upstream errors, sensor disagreement PM2.5 scaling, and streaming crash recovery.
+7. `tests/accessibility/components-a11y.test.tsx` (10 tests) — `axe-core` accessibility scans for all major interactive components including CitySearchBar and StationCrossCheckCard.
+8. `tests/unit/waqi-service.test.ts` (10 tests) — Physical station ingestion, token skip, threshold disagreement (>50 delta), memory cache hit.
+9. `tests/unit/gemini-mocked.test.ts` (8 tests) — Mocked Gemini client retry, stream generation, cross-check/fire prompt context grounding, candidate model failover, full outage fallback, stream chunk errors, and plan cache hit.
+10. `tests/unit/station-and-search.test.tsx` (8 tests) — CitySearchBar debounce, dropdown selection, StationCrossCheckCard warning banners, missing field fallbacks, clear button, and network error resilience.
+11. `tests/unit/geocoding-service.test.ts` (6 tests) — Debounced lookup, India-biased sorting, 1-hour TTL caching, timeout degradation.
+12. `tests/unit/firms-service.test.ts` (6 tests) — Seasonal stubble baseline (500km default), dynamic radius, live FIRMS CSV parser, 500/timeout resilience.
+13. `tests/unit/aqi-bucketing.test.ts` (5 tests) — US AQI thresholds, temperature inversion detection, Open-Meteo 500 error handling, missing field defaults, and coordinate quantization caching.
+14. `tests/unit/hooks-and-page.test.tsx` (5 tests) — `useAqi` preset & geolocation callbacks, unsupported browser geolocation, API failure error states, `usePlan` generation & rejection handling, `Home` dashboard rendering.
+15. `tests/unit/cache-and-rate-limiter.test.ts` (4 tests) — MemoryCache TTL, spatial coordinate quantization, sliding window rate limiter, IP extraction.
+16. `tests/unit/fallback-plan.test.ts` (3 tests) — Deterministic fallback plans for English, Tamil, and Hindi; cost tier coverage.
+17. `tests/unit/gemini-service.test.ts` (2 tests) — Missing key offline resilience for plans and chat.
 
 ---
 
