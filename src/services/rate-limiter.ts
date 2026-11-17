@@ -4,6 +4,7 @@
  */
 
 import { RATE_LIMITS } from '@/config/constants';
+import { errorResponse } from './api-response';
 
 interface RateLimitRecord {
   count: number;
@@ -11,6 +12,13 @@ interface RateLimitRecord {
 }
 
 const rateLimitMap = new Map<string, RateLimitRecord>();
+
+/**
+ * Clears all stored rate-limit records. Intended for use in test environments only.
+ */
+export function clearRateLimitStore(): void {
+  rateLimitMap.clear();
+}
 
 /**
  * Checks whether an incoming request from an identifier is within the rate limit.
@@ -56,4 +64,20 @@ export function getClientIp(req: Request): string {
     return realIp.trim();
   }
   return '127.0.0.1';
+}
+
+/**
+ * Verifies request rate limit and returns standardized error response if exceeded.
+ */
+export function enforceRateLimit(
+  req: Request,
+  prefix: string = 'general',
+  maxRequests: number = RATE_LIMITS.MAX_REQUESTS_GENERAL
+): ReturnType<typeof errorResponse> | null {
+  const ip = getClientIp(req);
+  const check = checkRateLimit(`${prefix}:${ip}`, maxRequests);
+  if (!check.allowed) {
+    return errorResponse('Rate limit exceeded. Please wait a moment.', 'TOO_MANY_REQUESTS', 429);
+  }
+  return null;
 }

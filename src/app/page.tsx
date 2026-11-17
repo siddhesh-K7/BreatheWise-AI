@@ -10,6 +10,7 @@ import { Footer } from '@/components/layout/Footer';
 import { PresetBar } from '@/components/layout/PresetBar';
 import { HazardousBanner } from '@/components/aqi/HazardousBanner';
 import { InversionCard } from '@/components/aqi/InversionCard';
+import { StationCrossCheckCard } from '@/components/aqi/StationCrossCheckCard';
 import { AqiOverview } from '@/components/aqi/AqiOverview';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PlanDisplay } from '@/components/plan/PlanDisplay';
@@ -28,8 +29,11 @@ export default function Home() {
     location,
     reading,
     weather,
+    crossCheck,
+    fireSummary,
     isLoading: aqiLoading,
     error: aqiError,
+    setLocation,
     selectPreset,
     requestGeolocation,
   } = useAqi();
@@ -66,6 +70,7 @@ export default function Home() {
         <PresetBar
           activeLocation={location}
           onSelectPreset={selectPreset}
+          onSelectLocation={setLocation}
           onRequestLocation={requestGeolocation}
           t={t}
         />
@@ -84,7 +89,7 @@ export default function Home() {
 
         {/* Meteorological Inversion & Air Quality Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-4">
             {reading ? (
               <AqiOverview location={location} reading={reading} t={t} />
             ) : (
@@ -96,10 +101,11 @@ export default function Home() {
                 </span>
               </div>
             )}
+            <StationCrossCheckCard crossCheck={crossCheck} />
           </div>
 
           <div className="lg:col-span-1">
-            {weather && <InversionCard weather={weather} t={t} />}
+            {weather && <InversionCard weather={weather} fireSummary={fireSummary} t={t} />}
           </div>
         </div>
 

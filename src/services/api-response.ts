@@ -53,3 +53,23 @@ export function errorResponse(
   };
   return NextResponse.json(body, { status });
 }
+
+/**
+ * Outbound fetch wrapper enforcing strict AbortController timeout.
+ */
+export async function executeFetchWithTimeout(
+  url: string,
+  timeoutMs: number = 5000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) {
+      throw new Error(`Upstream responded with HTTP ${res.status}`);
+    }
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}

@@ -76,3 +76,39 @@ This log records architectural decisions, rationale, trade-offs, and compliance 
   - UI labels and Gemini recommendations localized based on active language.
   - WCAG 2.2 AA compliance: Skip navigation links, single `<h1>`, logical heading hierarchy, full keyboard navigability with visible focus rings (`focus-visible`), `aria-live="polite"` for AQI updates and streaming chat, minimum 44x44px touch targets.
   - Status indicators never rely on color alone: every AQI level uses numerical values, descriptive category badges, and distinct visual icons.
+
+
+---
+
+## Decision 8: Additional Data Sources — WAQI, FIRMS, and Geocoding
+
+### 8a. WAQI Ground Station Cross-Check
+- **Choice**: Integrate `WAQI_API_TOKEN` / `AQICN_API_TOKEN` for physical ground station validation.
+- **Rationale**: Open-Meteo provides gridded atmospheric model data, not physical station readings. Station cross-check adds real-world ground truth. When model and station disagree by >50 AQI points, the app elevates safety guidance to the higher value, protecting vulnerable users.
+- **Graceful Degradation**: If token is absent, `fetchWaqiStationReading` returns `{isAvailable: false}` and the UI shows a plain-language notice. The app continues fully functional on Open-Meteo standalone.
+- **Attribution**: Footer includes "Air quality data from WAQI project (aqicn.org) where available."
+- **Cache TTL**: 15 minutes per lat/lon pair rounded to 2 decimals.
+
+### 8b. NASA FIRMS Fire Activity
+- **Choice**: If `NASA_FIRMS_MAP_KEY` present, fetch VIIRS_SNPP_NRT CSV for 24h fire detections within 150km radius. If absent, use a regional seasonal baseline model.
+- **Rationale**: Agricultural stubble burning from Punjab/Haryana accounts for 30-60% of Delhi AQI spikes in Oct-Nov. Feeding live fire counts into the Gemini prompt context makes winter smog advisories quantitatively accurate rather than generic.
+- **Graceful Degradation**: Seasonal baseline returns `[Seasonal Baseline Model]` label; Gemini prompt context still includes fire data (from baseline). App never fails due to missing FIRMS key.
+- **Cache TTL**: 15 minutes (same as AQI data, since fires evolve over hours).
+
+### 8c. Open-Meteo Geocoding
+- **Choice**: Use Open-Meteo Geocoding API for city search autocomplete with India-biased ranking.
+- **Rationale**: No API key required; free; covers 7M+ locations. India-biased ranking (country_code === "IN" sorted first) ensures Indian city suggestions appear at top.
+- **Cache TTL**: 24 hours per query string (geocoding results are stable).
+
+### 8d. Rate Limiter Architecture Fix
+- **Choice**: Changed AQI and geocoding API routes from using `enforceRateLimit()` (internal function call, not interceptable by vi.spyOn) to calling `checkRateLimit()` directly.
+- **Rationale**: ESM module-internal function calls cannot be intercepted by `vi.spyOn` on named exports. The recommendations route already called `checkRateLimit` directly and had working spy tests. Aligning AQI and geocoding routes to the same pattern makes all 88 tests pass cleanly.
+- **Added**: `clearRateLimitStore()` export for test isolation; `vi.restoreAllMocks()` in global `afterEach` via setup.ts.
+
+---
+
+## Decision 9: Submission Asset Production
+
+- **Demo Video**: Recorded via Playwright + system Chromium against live Vercel URL per `demo-video-recorder` SKILL.md.
+- **Reel Script**: 30-second shot-by-shot script provided at `submission/reel_script.txt` since YouTube/Drive upload credentials were not found in vault.
+- **Submission files**: Plain text, no emoji, all in `submission/` folder.

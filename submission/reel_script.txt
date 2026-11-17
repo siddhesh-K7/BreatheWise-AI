@@ -1,0 +1,27 @@
+30-Second Reel Script — AirWise Urban Air Quality Assistant
+
+SHOT 1 (0:00-0:04): Title card over dark background
+Text: "AirWise — Real-Time Air Quality Action Engine"
+Subtitle: "Built for Hack2skill PromptWars Challenge 6"
+
+SHOT 2 (0:04-0:10): Click Delhi preset, AQI data loads, hazardous banner appears
+Narration (voice-over or on-screen text): "Real-time AQI from Open-Meteo + WAQI ground stations"
+Show: AQI number 285, inversion card warning, station cross-check panel
+
+SHOT 3 (0:10-0:17): Profile form — toggle children: yes, respiratory sensitivity: on
+Narration: "Personalized for your household"
+Show: Gemini-generated plan appears — time-blocked routines, indoor hacks
+
+SHOT 4 (0:17-0:21): What-if simulator — toggle commute mode, exposure numbers change
+Narration: "What-if simulator with live exposure impact"
+Show: Cigarette equivalents and CO2 kg values updating instantly
+
+SHOT 5 (0:21-0:26): Streaming chat — type "What should my child avoid today?" — tokens stream
+Narration: "Streaming AI advisor powered by Gemini 1.5 Flash"
+Show: Real-time token streaming, language-specific answer
+
+SHOT 6 (0:26-0:30): Language switch to Tamil, then Hindi, skip-link keyboard nav
+Narration: "WCAG 2.2 AA, 3 languages, full keyboard access"
+Show: UI text changes, focus ring navigating through elements
+
+END CARD (overlay): GitHub | Live URL | #Hack2skill #AirQuality #GenAI

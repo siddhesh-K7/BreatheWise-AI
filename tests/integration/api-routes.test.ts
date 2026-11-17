@@ -1,10 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 import { GET as healthHandler } from '@/app/api/health/route';
 import { GET as aqiHandler } from '@/app/api/aqi/route';
+import { GET as geocodingHandler } from '@/app/api/geocoding/route';
+import { GET as geocodeAliasHandler } from '@/app/api/geocode/route';
+import { GET as firesHandler } from '@/app/api/fires/route';
+import { GET as waqiHandler } from '@/app/api/waqi/route';
 import { POST as planHandler } from '@/app/api/recommendations/route';
 import { POST as chatHandler } from '@/app/api/chat/route';
 import * as rateLimiter from '@/services/rate-limiter';
 import * as aqiService from '@/services/aqi-service';
+import * as geocodingService from '@/services/geocoding-service';
+import * as firmsService from '@/services/firms-service';
+import * as waqiService from '@/services/waqi-service';
 
 describe('Serverless API Route Handlers Integration Tests', () => {
   it('GET /api/health returns 200 and healthy service telemetry', async () => {
@@ -183,5 +190,96 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     const res = await chatHandler(req);
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('text/plain');
+  });
+
+  it('GET /api/geocoding handles validation, rate limiting, and returns candidates', async () => {
+    const reqInvalid = new Request('https://test.local/api/geocoding?q=a');
+    const resInvalid = await geocodingHandler(reqInvalid);
+    expect(resInvalid.status).toBe(400);
+
+    const reqValid = new Request('https://test.local/api/geocoding?q=delhi');
+    const resValid = await geocodingHandler(reqValid);
+    expect(resValid.status).toBe(200);
+    const jsonValid = await resValid.json();
+    expect(jsonValid.success).toBe(true);
+    expect(Array.isArray(jsonValid.data)).toBe(true);
+
+    vi.spyOn(rateLimiter, 'checkRateLimit').mockReturnValueOnce({
+      allowed: false,
+      remaining: 0,
+      resetMs: 5000,
+    });
+    const reqThrottled = new Request('https://test.local/api/geocoding?q=mumbai');
+    const resThrottled = await geocodingHandler(reqThrottled);
+    expect(resThrottled.status).toBe(429);
+
+    vi.spyOn(geocodingService, 'searchLocations').mockRejectedValueOnce(new Error('Network fault'));
+    const reqError = new Request('https://test.local/api/geocoding?q=lucknow');
+    const resError = await geocodingHandler(reqError);
+    expect(resError.status).toBe(502);
+  });
+
+  it('GET /api/geocode acts as an alias to geocoding endpoint', async () => {
+    const req = new Request('https://test.local/api/geocode?q=delhi');
+    const res = await geocodeAliasHandler(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.success).toBe(true);
+  });
+
+  it('GET /api/fires validates coordinates, handles rate limits, and returns data', async () => {
+    const reqInvalid = new Request('https://test.local/api/fires?lat=invalid&lon=77');
+    const resInvalid = await firesHandler(reqInvalid);
+    expect(resInvalid.status).toBe(400);
+
+    const reqValid = new Request('https://test.local/api/fires?lat=28.61&lon=77.23&radius=100');
+    const resValid = await firesHandler(reqValid);
+    expect(resValid.status).toBe(200);
+    const jsonValid = await resValid.json();
+    expect(jsonValid.success).toBe(true);
+    expect(jsonValid.data.isAvailable).toBe(true);
+
+    vi.spyOn(rateLimiter, 'enforceRateLimit').mockReturnValueOnce(
+      new Response(JSON.stringify({ success: false, error: { code: 'TOO_MANY_REQUESTS' } }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    const reqThrottled = new Request('https://test.local/api/fires?lat=28.61&lon=77.23');
+    const resThrottled = await firesHandler(reqThrottled);
+    expect(resThrottled.status).toBe(429);
+
+    vi.spyOn(firmsService, 'fetchActiveFiresSummary').mockRejectedValueOnce(new Error('FIRMS API down'));
+    const reqErr = new Request('https://test.local/api/fires?lat=28.61&lon=77.23');
+    const resErr = await firesHandler(reqErr);
+    expect(resErr.status).toBe(502);
+  });
+
+  it('GET /api/waqi validates coordinates, handles rate limits, cross-checks and returns data', async () => {
+    const reqInvalid = new Request('https://test.local/api/waqi?lat=200&lon=77');
+    const resInvalid = await waqiHandler(reqInvalid);
+    expect(resInvalid.status).toBe(400);
+
+    const reqValid = new Request('https://test.local/api/waqi?lat=28.61&lon=77.23&modelAqi=250');
+    const resValid = await waqiHandler(reqValid);
+    expect(resValid.status).toBe(200);
+    const jsonValid = await resValid.json();
+    expect(jsonValid.success).toBe(true);
+    expect(jsonValid.data.crossCheck).toBeDefined();
+
+    vi.spyOn(rateLimiter, 'enforceRateLimit').mockReturnValueOnce(
+      new Response(JSON.stringify({ success: false, error: { code: 'TOO_MANY_REQUESTS' } }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    const reqThrottled = new Request('https://test.local/api/waqi?lat=28.61&lon=77.23');
+    const resThrottled = await waqiHandler(reqThrottled);
+    expect(resThrottled.status).toBe(429);
+
+    vi.spyOn(waqiService, 'fetchWaqiStationReading').mockRejectedValueOnce(new Error('WAQI service fault'));
+    const reqErr = new Request('https://test.local/api/waqi?lat=28.61&lon=77.23');
+    const resErr = await waqiHandler(reqErr);
+    expect(resErr.status).toBe(502);
   });
 });

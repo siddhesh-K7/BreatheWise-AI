@@ -8,6 +8,7 @@ import { GEMINI_TOKEN_BUDGETS } from '@/config/constants';
 import {
   AirWisePlan,
   AqiReading,
+  FirmsFireSummary,
   LocationQuery,
   QuantifiedImpact,
   SupportedLanguage,
@@ -37,7 +38,8 @@ export async function generateStructuredPlan(
   reading: AqiReading,
   weather: WeatherContext,
   impact: QuantifiedImpact,
-  language: SupportedLanguage
+  language: SupportedLanguage,
+  fireSummary?: FirmsFireSummary
 ): Promise<AirWisePlan> {
   const cacheKey = buildPlanCacheKey(location, profile, reading.usAqi, language);
   const cached = appCache.get<AirWisePlan>(cacheKey);
@@ -50,7 +52,14 @@ export async function generateStructuredPlan(
     return generateDeterministicFallbackPlan(location, profile, reading, weather, impact, language);
   }
 
-  const prompt = buildStructuredPlanPrompt(location, profile, reading, weather, language);
+  const prompt = buildStructuredPlanPrompt(
+    location,
+    profile,
+    reading,
+    weather,
+    language,
+    fireSummary
+  );
   const plan = await executePlanGenerationWithRetry(
     client,
     prompt,
@@ -119,12 +128,18 @@ function buildStructuredPlanPrompt(
   prof: UserProfile,
   read: AqiReading,
   weath: WeatherContext,
-  lang: SupportedLanguage
+  lang: SupportedLanguage,
+  fire?: FirmsFireSummary
 ): string {
+  const fireText = fire
+    ? `Regional Active Fires (150km): ${fire.count24h} in 24h, ${fire.count72h} in 72h (${fire.isSeasonalBaseline ? 'Seasonal Baseline' : 'Live FIRMS'})`
+    : 'Regional Fires: Seasonal agricultural burning season';
+
   return `You are AirWise Engine, an expert urban air quality action planner.
 Location: ${loc.cityName} (${loc.latitude.toFixed(2)}, ${loc.longitude.toFixed(2)})
 Current US AQI: ${read.usAqi} (PM2.5: ${read.pm25} ug/m3, PM10: ${read.pm10} ug/m3)
 Meteorology: Temp ${weath.temperatureC}C, Wind ${weath.windSpeedKmh} km/h, Boundary Layer ${weath.boundaryLayerMeters}m, Inversion: ${weath.isInversionActive}
+${fireText}
 Household: Children: ${prof.hasChildren}, Elderly: ${prof.hasElderly}, Sensitive: ${prof.respiratorySensitivity}, Commute: ${prof.commuteMode} (${prof.dailyCommuteKm} km/day), Purifier: ${prof.hasPurifier}, Fuel: ${prof.cookingFuel}
 Language: ${lang}
 

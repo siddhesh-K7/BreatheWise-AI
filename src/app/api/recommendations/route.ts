@@ -4,6 +4,7 @@
  */
 
 import { fetchAirQualityAndWeather } from '@/services/aqi-service';
+import { fetchActiveFiresSummary } from '@/services/firms-service';
 import { errorResponse, successResponse } from '@/services/api-response';
 import { generateStructuredPlan } from '@/services/gemini-service';
 import { calculateImpact } from '@/services/impact-calculator';
@@ -44,10 +45,10 @@ export async function POST(req: Request) {
   const { location, profile, language } = validation.data;
 
   try {
-    const { reading, weather } = await fetchAirQualityAndWeather(
-      location.latitude,
-      location.longitude
-    );
+    const [{ reading, weather }, fireSummary] = await Promise.all([
+      fetchAirQualityAndWeather(location.latitude, location.longitude),
+      fetchActiveFiresSummary(location.latitude, location.longitude),
+    ]);
     const impact = calculateImpact(reading.pm25, profile);
     const plan = await generateStructuredPlan(
       location,
@@ -55,7 +56,8 @@ export async function POST(req: Request) {
       reading,
       weather,
       impact,
-      language
+      language,
+      fireSummary
     );
 
     return successResponse(plan);

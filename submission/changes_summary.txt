@@ -1,0 +1,10 @@
+AirWise is an urban air quality assistant for severe winter smog. Built for Hack2skill PromptWars Challenge 6.
+
+Key Capabilities:
+- Live Open-Meteo telemetry (PM2.5, PM10, gases, boundary layer inversion) with WAQI physical station cross-check. Elevates safety AQI if variance > 50.
+- NASA FIRMS satellite fire detection feeds stubble burning context into Gemini 1.5 Flash.
+- Gemini synthesizes schema-validated structured plans: diurnal routines avoiding peak inversions, cost-tiered indoor hacks (Free/Under INR 500/Over INR 500), and sustainable alternatives with quantified CO2 savings.
+- Deterministic Berkeley Earth cigarette equivalence and CPCB transit emission math with real-time what-if simulator.
+- Real-time streaming conversational AI advisor with prompt injection defense.
+- Full WCAG 2.2 AA accessibility, zero violations via axe-core, keyboard navigation, English, Tamil, and Hindi localization.
+- 100% serverless, zero client-side keys, zero PII persistence.

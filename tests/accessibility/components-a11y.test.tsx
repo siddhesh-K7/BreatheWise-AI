@@ -11,6 +11,8 @@ import { ProfileForm } from '@/components/profile/ProfileForm';
 import { WhatIfSimulator } from '@/components/simulator/WhatIfSimulator';
 import { CommunityCard } from '@/components/community/CommunityCard';
 import { Footer } from '@/components/layout/Footer';
+import { StationCrossCheckCard } from '@/components/aqi/StationCrossCheckCard';
+import { CitySearchBar } from '@/components/layout/CitySearchBar';
 
 const t = TRANSLATIONS.en;
 
@@ -45,7 +47,13 @@ describe('Automated Component Accessibility (a11y) Tests via axe-core', () => {
   it('PresetBar has 0 axe accessibility violations', async () => {
     const loc = { latitude: 28.61, longitude: 77.23, cityName: 'Delhi NCR' };
     const { container } = render(
-      <PresetBar activeLocation={loc} onSelectPreset={() => {}} onRequestLocation={() => {}} t={t} />
+      <PresetBar
+        activeLocation={loc}
+        onSelectPreset={() => {}}
+        onSelectLocation={() => {}}
+        onRequestLocation={() => {}}
+        t={t}
+      />
     );
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);
@@ -117,6 +125,32 @@ describe('Automated Component Accessibility (a11y) Tests via axe-core', () => {
 
   it('Footer has 0 axe accessibility violations', async () => {
     const { container } = render(<Footer t={t} />);
+    const results = await axe.run(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it('StationCrossCheckCard has 0 axe accessibility violations', async () => {
+    const crossCheck = {
+      modelAqi: 220,
+      stationReading: {
+        isAvailable: true,
+        stationName: 'US Embassy Delhi',
+        stationAqi: 280,
+        dominantPollutant: 'PM2.5',
+        timestamp: '2026-11-17T08:00:00Z',
+        distanceKm: 4.5,
+      },
+      disagreementDetected: true,
+      deviation: 60,
+      effectiveSafetyAqi: 280,
+    };
+    const { container } = render(<StationCrossCheckCard crossCheck={crossCheck} />);
+    const results = await axe.run(container);
+    expect(results.violations).toHaveLength(0);
+  });
+
+  it('CitySearchBar has 0 axe accessibility violations', async () => {
+    const { container } = render(<CitySearchBar onSelectLocation={() => {}} />);
     const results = await axe.run(container);
     expect(results.violations).toHaveLength(0);
   });

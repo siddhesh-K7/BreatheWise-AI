@@ -1,0 +1,43 @@
+HACK2SKILL PROMPTWARS VIRTUAL — SUBMISSION FORM
+
+Project Title:
+AirWise — Urban Air Quality & Winter Smog Action Engine
+
+Challenge Track:
+Challenge 6: Urban Air Quality Assistant
+
+Tagline:
+GenAI-powered urban air quality assistant navigating severe winter smog with low-emission routines and quantified impact tracking.
+
+Team / Participant:
+Sabarish R (GitHub: SabarishR08)
+
+Public GitHub Repository:
+https://github.com/SabarishR08/airwise-urban-air-quality-assistant
+
+Live Production URL:
+https://airwise-urban-air-quality-assistant.vercel.app
+
+Demo Video Link / Path:
+recordings/airwise_demo_walkthrough_1080p.mp4
+
+Problem Statement Alignment:
+AirWise addresses winter smog, stubble burning, and thermal inversions across Indian cities. It combines live Open-Meteo atmospheric telemetry with WAQI ground station cross-checks and NASA FIRMS thermal anomaly detection. Google Gemini 1.5 Flash generates tailored, low-emission daily routines, cost-tiered indoor air hacks, and sustainable commute/fuel alternatives with deterministic impact accounting.
+
+Core Tech Stack:
+- Next.js 15 (App Router, React Server Components, Route Handlers)
+- React 19 + TypeScript (Strict Mode)
+- Tailwind CSS v4
+- Google Gemini 1.5 Flash (@google/generative-ai)
+- Open-Meteo Air Quality, Weather, and Geocoding APIs
+- WAQI Ground Station Cross-Check API
+- NASA FIRMS VIIRS Thermal Hotspot Telemetry
+- Vitest + Testing Library + axe-core (94 automated tests, WCAG 2.2 AA compliant)
+- Playwright E2E automation
+
+Key Highlights & Innovation:
+1. Real Telemetry & Station Validation: Disagreement detection when model and ground station deviate > 50 AQI points, elevating to higher safety AQI.
+2. Inversion & Smog Tracking: Boundary layer height and surface wind indicators detect trapped particulate smog.
+3. Quantified Impact Accounting: Deterministic Berkeley Earth cigarette equivalence and CPCB transit emission models with live what-if simulation.
+4. Production Hardening: 100% serverless, zero client-side keys, sliding-window rate limiting, strict CSP/HSTS security headers, full prompt injection defense.
+5. Accessibility & Localization: 100% WCAG 2.2 AA compliant (0 axe violations), keyboard navigation, English, Tamil, and Hindi support.

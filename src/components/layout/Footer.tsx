@@ -23,6 +23,39 @@ export function Footer({ t }: FooterProps) {
           </div>
         </div>
 
+        <div className="text-[11px] text-slate-500 space-y-1">
+          <p>
+            Atmospheric telemetry powered by{' '}
+            <a
+              href="https://open-meteo.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:underline"
+            >
+              Open-Meteo (CC BY 4.0)
+            </a>
+            , ground station cross-check feed via{' '}
+            <a
+              href="https://waqi.info/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:underline"
+            >
+              World Air Quality Index (WAQI / aqicn.org)
+            </a>
+            , and active thermal anomaly detection courtesy of{' '}
+            <a
+              href="https://firms.modaps.eosdis.nasa.gov/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-400 hover:underline"
+            >
+              NASA FIRMS VIIRS
+            </a>
+            .
+          </p>
+        </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-900">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />

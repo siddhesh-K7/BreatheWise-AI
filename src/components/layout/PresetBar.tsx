@@ -6,27 +6,30 @@ import { LocationQuery } from '@/domain/types';
 import { TranslationDictionary } from '@/config/translations';
 import { Button } from '@/components/ui/Button';
 import { MapPin, Navigation } from 'lucide-react';
+import { CitySearchBar } from './CitySearchBar';
 
 interface PresetBarProps {
   activeLocation: LocationQuery;
   onSelectPreset: (presetId: string) => void;
+  onSelectLocation: (loc: LocationQuery) => void;
   onRequestLocation: () => void;
   t: TranslationDictionary;
 }
 
 /**
- * Metropolitan preset selector and geolocation consent trigger.
+ * Metropolitan preset selector, autocomplete city search, and geolocation consent trigger.
  */
 export function PresetBar({
   activeLocation,
   onSelectPreset,
+  onSelectLocation,
   onRequestLocation,
   t,
 }: PresetBarProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-4 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
       <div
-        className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0"
+        className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0"
         role="group"
         aria-label="Metropolitan presets"
       >
@@ -53,10 +56,13 @@ export function PresetBar({
         })}
       </div>
 
-      <Button onClick={onRequestLocation} variant="outline" size="sm" className="gap-2 shrink-0">
-        <Navigation className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-        <span>{t.locateMe}</span>
-      </Button>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <CitySearchBar onSelectLocation={onSelectLocation} />
+        <Button onClick={onRequestLocation} variant="outline" size="sm" className="gap-2 shrink-0">
+          <Navigation className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+          <span>{t.locateMe}</span>
+        </Button>
+      </div>
     </div>
   );
 }

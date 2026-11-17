@@ -4,6 +4,8 @@
  */
 
 import { fetchAirQualityAndWeather } from '@/services/aqi-service';
+import { crossCheckAqi, fetchWaqiStationReading } from '@/services/waqi-service';
+import { fetchActiveFiresSummary } from '@/services/firms-service';
 import { errorResponse, successResponse } from '@/services/api-response';
 import { checkRateLimit, getClientIp } from '@/services/rate-limiter';
 import { locationQuerySchema } from '@/validators/schemas';
@@ -13,7 +15,7 @@ import { locationQuerySchema } from '@/validators/schemas';
  */
 export async function GET(req: Request) {
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(ip);
+  const rateLimit = checkRateLimit(`aqi-telemetry:${ip}`);
   if (!rateLimit.allowed) {
     return errorResponse('Rate limit exceeded. Please wait a moment.', 'TOO_MANY_REQUESTS', 429);
   }
@@ -41,11 +43,20 @@ export async function GET(req: Request) {
   }
 
   try {
-    const { reading, weather } = await fetchAirQualityAndWeather(lat, lon);
+    const [telemetry, stationReading, fireSummary] = await Promise.all([
+      fetchAirQualityAndWeather(lat, lon),
+      fetchWaqiStationReading(lat, lon),
+      fetchActiveFiresSummary(lat, lon),
+    ]);
+    const crossCheck = crossCheckAqi(telemetry.reading.usAqi, stationReading);
+
     return successResponse({
       location: validation.data,
-      reading,
-      weather,
+      reading: telemetry.reading,
+      weather: telemetry.weather,
+      stationReading,
+      crossCheck,
+      fireSummary,
     });
   } catch (err) {
     return errorResponse(

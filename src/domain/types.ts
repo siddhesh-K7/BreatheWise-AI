@@ -147,3 +147,52 @@ export interface LocationQuery {
   cityName: string;
   stateName?: string;
 }
+
+/**
+ * Result returned by Open-Meteo geocoding search.
+ */
+export interface GeocodingResult {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  country: string;
+  countryCode: string;
+  admin1?: string;
+}
+
+/**
+ * Physical ground monitoring station reading from WAQI/aqicn.
+ */
+export interface WaqiStationReading {
+  isAvailable: boolean;
+  stationName?: string;
+  stationAqi?: number;
+  dominantPollutant?: string;
+  timestamp?: string;
+  distanceKm?: number;
+  statusReason?: string;
+}
+
+/**
+ * Comparative telemetry analysis between gridded atmospheric model and ground station.
+ */
+export interface AqiCrossCheck {
+  modelAqi: number;
+  stationReading: WaqiStationReading;
+  disagreementDetected: boolean;
+  deviation: number;
+  effectiveSafetyAqi: number;
+}
+
+/**
+ * Active thermal anomaly / fire detection summary from NASA FIRMS telemetry.
+ */
+export interface FirmsFireSummary {
+  isAvailable: boolean;
+  count24h: number;
+  count72h: number;
+  radiusKm: number;
+  isSeasonalBaseline: boolean;
+  advisoryText: string;
+}

@@ -97,6 +97,21 @@ sequenceDiagram
 
 ---
 
+## 🌐 Telemetry Data Sources & Graceful Degradation
+
+AirWise interfaces with multiple verified atmospheric telemetry providers, physical ground sensors, and orbital earth observation systems to build comprehensive situational awareness:
+
+| Telemetry Provider | Data Provided | API Key Required | In-Memory Cache TTL | Failure & Degradation Behavior | Required Attribution | Implementation File |
+|---|---|---|---|---|---|---|
+| **Open-Meteo Air Quality** | Live PM2.5, PM10, NO2, O3, SO2, CO, US AQI, 24h hourly forecast | None (Public API) | 15 minutes | Returns typed upstream 502 error; caught by frontend ErrorBoundary | Open-Meteo (CC BY 4.0) | `src/services/aqi-service.ts` |
+| **Open-Meteo Weather** | Boundary layer height, 10m surface wind, ambient temp, relative humidity | None (Public API) | 15 minutes | Normalizes to standard 350m neutral boundary layer | Open-Meteo (CC BY 4.0) | `src/services/aqi-service.ts` |
+| **Open-Meteo Geocoding** | Debounced city & locality autocomplete with India-biased ranking | None (Public API) | 24 hours | Falls back gracefully to empty suggestions list; preserves preset selector | Open-Meteo (CC BY 4.0) | `src/services/geocoding-service.ts` |
+| **WAQI / aqicn.org** | Physical ground station cross-check, station name, distance, timestamp | `WAQI_API_TOKEN` / `AQICN_API_TOKEN` | 15 minutes | Clean skip with status notice ("Operating in Open-Meteo standalone mode"); elevates safety AQI if diff > 50 | World Air Quality Index Project (waqi.info) | `src/services/waqi-service.ts` |
+| **NASA FIRMS VIIRS** | Thermal anomaly & active agricultural stubble fire detection (150 km radius) | `NASA_FIRMS_MAP_KEY` / `FIRMS_MAP_KEY` | 60 minutes | Clean fallback to regional agricultural stubble baseline (`[Seasonal Baseline Model]`) | NASA FIRMS / Earthdata | `src/services/firms-service.ts` |
+| **Google Gemini 1.5 Flash** | Structured JSON smog routines, indoor hacks, and streaming conversational chat | `GEMINI_API_KEY` | 30 minutes | 1-shot retry on schema discrepancy; fallback to deterministic rule-based plan | Google DeepMind / Google AI Studio | `src/services/gemini-service.ts` |
+
+---
+
 ## 🤖 Generative AI Utilization
 
 | GenAI Task | Model | Source File | Purpose & Guarantees |

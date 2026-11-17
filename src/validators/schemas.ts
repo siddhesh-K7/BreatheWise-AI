@@ -17,6 +17,14 @@ export const locationQuerySchema = z.object({
 });
 
 /**
+ * Autocomplete search query validation schema.
+ */
+export const geocodingQuerySchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  count: z.coerce.number().min(1).max(10).default(5),
+});
+
+/**
  * Household lifestyle, demographic, and housing parameter schema.
  */
 export const userProfileSchema = z.object({

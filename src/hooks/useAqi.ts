@@ -2,12 +2,22 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { METRO_PRESETS } from '@/config/constants';
-import { AqiReading, LocationQuery, WeatherContext } from '@/domain/types';
+import {
+  AqiCrossCheck,
+  AqiReading,
+  FirmsFireSummary,
+  LocationQuery,
+  WaqiStationReading,
+  WeatherContext,
+} from '@/domain/types';
 
 interface UseAqiReturn {
   location: LocationQuery;
   reading: AqiReading | null;
   weather: WeatherContext | null;
+  stationReading: WaqiStationReading | null;
+  crossCheck: AqiCrossCheck | null;
+  fireSummary: FirmsFireSummary | null;
   isLoading: boolean;
   error: string | null;
   setLocation: (loc: LocationQuery) => void;
@@ -29,6 +39,9 @@ export function useAqi(): UseAqiReturn {
   const [location, setLocation] = useState<LocationQuery>(DEFAULT_LOCATION);
   const [reading, setReading] = useState<AqiReading | null>(null);
   const [weather, setWeather] = useState<WeatherContext | null>(null);
+  const [stationReading, setStationReading] = useState<WaqiStationReading | null>(null);
+  const [crossCheck, setCrossCheck] = useState<AqiCrossCheck | null>(null);
+  const [fireSummary, setFireSummary] = useState<FirmsFireSummary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +58,9 @@ export function useAqi(): UseAqiReturn {
       }
       setReading(data.data.reading);
       setWeather(data.data.weather);
+      setStationReading(data.data.stationReading || null);
+      setCrossCheck(data.data.crossCheck || null);
+      setFireSummary(data.data.fireSummary || null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Telemetry request failed');
     } finally {
@@ -94,6 +110,9 @@ export function useAqi(): UseAqiReturn {
     location,
     reading,
     weather,
+    stationReading,
+    crossCheck,
+    fireSummary,
     isLoading,
     error,
     setLocation,

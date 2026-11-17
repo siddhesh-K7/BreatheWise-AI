@@ -14,6 +14,7 @@ playwright-report/
 /out/
 build/
 dist/
+.vercel/
 
 # Environment Variables and Credentials
 .env*
@@ -46,3 +47,6 @@ next-env.d.ts.bak
 .vscode/
 *.swp
 *.swo
+
+.vercel
+.env*
