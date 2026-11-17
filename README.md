@@ -12,7 +12,7 @@ Severe winter smog, seasonal agricultural stubble burning, and ground-level atmo
 
 ## 🔗 Live Links
 - **Production URL**: [https://airwise-urban-air-quality-assistant.vercel.app](https://airwise-urban-air-quality-assistant.vercel.app)
-- **Demo Video (1080p Walkthrough)**: [Watch 90-Second Walkthrough Video](recordings/airwise_demo_walkthrough_1080p.mp4)
+- **Demo Video (1080p Walkthrough)**: [Watch 1080p Walkthrough Video (Google Drive)](https://drive.google.com/file/d/10_NhPz4X2wbol_FBEOll4otHIVWPuQpi/view?usp=sharing) | [Local File](recordings/airwise_demo_walkthrough_1080p.mp4)
 - **GitHub Repository**: [https://github.com/SabarishR08/airwise-urban-air-quality-assistant](https://github.com/SabarishR08/airwise-urban-air-quality-assistant)
 
 ---

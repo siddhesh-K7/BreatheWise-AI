@@ -19,7 +19,8 @@ Live Production URL:
 https://airwise-urban-air-quality-assistant.vercel.app
 
 Demo Video Link / Path:
-recordings/airwise_demo_walkthrough_1080p.mp4
+https://drive.google.com/file/d/10_NhPz4X2wbol_FBEOll4otHIVWPuQpi/view?usp=sharing
+(Local: recordings/airwise_demo_walkthrough_1080p.mp4)
 
 Problem Statement Alignment:
 AirWise addresses winter smog, stubble burning, and thermal inversions across Indian cities. It combines live Open-Meteo atmospheric telemetry with WAQI ground station cross-checks and NASA FIRMS thermal anomaly detection. Google Gemini 1.5 Flash generates tailored, low-emission daily routines, cost-tiered indoor air hacks, and sustainable commute/fuel alternatives with deterministic impact accounting.
