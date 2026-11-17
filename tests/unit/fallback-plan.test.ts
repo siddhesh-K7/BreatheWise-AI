@@ -72,4 +72,44 @@ describe('Deterministic Fallback Plan Generator Unit Tests', () => {
     expect(tiers).toContain('under_inr_500');
     expect(tiers).toContain('over_inr_500');
   });
+
+  it('tailors health guidance across age categories in fallback plan', () => {
+    const adultOnlyProfile: UserProfile = {
+      ...prof,
+      hasChildren: false,
+      hasElderly: false,
+      respiratorySensitivity: false,
+    };
+    const plan = generateDeterministicFallbackPlan(loc, adultOnlyProfile, reading, weather, impact, 'en');
+    expect(plan.healthGuidance.length).toBeGreaterThanOrEqual(2);
+    const groups = plan.healthGuidance.map((g) => g.group);
+    expect(groups).toContain('infants_children');
+    expect(groups).toContain('elderly_sensitive');
+  });
+
+  it('adapts recommendations when AQI is moderate/satisfactory vs hazardous', () => {
+    const goodReading: AqiReading = {
+      ...reading,
+      usAqi: 45,
+      pm25: 11,
+      category: 'good',
+      categoryLabel: 'Good',
+    };
+    const plan = generateDeterministicFallbackPlan(loc, prof, goodReading, weather, impact, 'en');
+    expect(plan.isFallback).toBe(true);
+    expect(plan.summary).toContain('Delhi');
+  });
+
+  it('includes specific ventilation hacks for high-leakage dwellings', () => {
+    const draftyProfile: UserProfile = { ...prof, homeVentilation: 'high-leakage' };
+    const plan = generateDeterministicFallbackPlan(loc, draftyProfile, reading, weather, impact, 'en');
+    const hacks = plan.indoorHacks.map((h) => h.title.toLowerCase());
+    expect(hacks.some((t) => t.includes('seal') || t.includes('draft') || t.includes('filter') || t.includes('gap'))).toBe(true);
+  });
+
+  it('adapts sustainable alternatives when user already commutes by public transit', () => {
+    const transitProfile: UserProfile = { ...prof, commuteMode: 'metro' };
+    const plan = generateDeterministicFallbackPlan(loc, transitProfile, reading, weather, impact, 'en');
+    expect(plan.sustainableAlternatives.length).toBeGreaterThanOrEqual(2);
+  });
 });

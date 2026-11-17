@@ -144,3 +144,26 @@ This log records architectural decisions, rationale, trade-offs, and compliance 
   - Expanded `api-routes.test.ts` with streaming 500 error catch branches, sensor disagreement PM2.5 scaling, and parameter aliases.
   - Expanded `components.test.tsx` and `station-and-search.test.tsx` testing emergency banner threshold boundaries (`aqi <= 300` vs `> 300`), normal dispersion styling, metric card variants, and network error resilience.
 - **Outcome**: Total test suite increased from 96 to 110 tests across all 15 suites. Statement and line coverage rose to 99.12%, and branch coverage rose from 84.78% to 93.06% (well exceeding the 85% gate threshold). CI and local builds pass with 0 warnings or errors.
+
+---
+
+## Decision 13: Test Suite Scaling (180 Tests) and Walkthrough Demo Pacing Optimization
+
+- **Test Suite Expansion**:
+  - Expanded unit and integration test coverage across all boundary conditions:
+    * `tests/unit/impact-calculator.test.ts`: Added bicycle/walk zero CO2 baseline tests, EV proportional transit savings, 0 km daily commute safety, and clean cooking fuel mitigation comparisons.
+    * `tests/unit/fallback-plan.test.ts`: Added vulnerable age category guidance, drafty high-leakage dwelling sealing hacks, and transit commute adaptivity.
+    * `tests/unit/cache-and-rate-limiter.test.ts`: Added multi-hop `x-forwarded-for` proxy IP parsing, mutable cache key overwrite, and sliding-window rate limit reset expirations.
+    * `tests/unit/aqi-bucketing.test.ts`: Added negative/zero AQI clamping and extreme dispersion index boundary evaluations.
+    * `tests/unit/translations-and-constants.test.ts`: Added multi-language dictionary key completeness checks for all UI tabs and inversion warnings.
+    * `tests/unit/validators.test.ts`: Added mixed-case prompt injection sanitization, script tag stripping, and user profile commute boundary validations.
+  - **Outcome**: Total test suite scaled from 162 to **180 automated tests passing (100% pass rate)** across 17 suites. Line coverage reached **99.24%**, branch coverage reached **94.12%**.
+
+- **Walkthrough Demo Video Optimization**:
+  - **Identified Defect**: Playwright selector `button[type="submit"]:has(svg)` ambiguously matched the top-level Profile form's submit button rather than the Chat submit button, triggering an unintended scroll jump to the top and preventing the live chat response from rendering in the recording.
+  - **Resolution**:
+    * Replaced selector dispatch with `chatInput.press('Enter')` to guarantee form-specific execution without selector ambiguity or page jumps.
+    * Centered chat viewport at scroll offset `3150` so both the user question and the live streaming Gemini response render clearly in full view.
+    * Added explicit `page.close()` before `context.close()` in `record_demo_walkthrough.js` to ensure the live streaming HTTP connection terminates cleanly and flushes the raw recording without hanging.
+    * Optimized FFmpeg encoding parameters with `-preset fast`, reducing encoding duration to ~30 seconds while producing an ultra-crisp 1080p H.264 MP4 (4.6 MB, 2m 27s).
+    * Maintained 100% English throughout the entire walkthrough (zero language switching), showing smooth transitions, glowing emerald cursor rings, and complete feature coverage.

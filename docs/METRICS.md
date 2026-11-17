@@ -51,11 +51,11 @@ This document contains real, measured engineering metrics captured directly from
 | Metric | Measured Result | Enforced Threshold | Status |
 |---|---|---|---|
 | **Total Automated Test Suites** | **17 suites** | All pass | **PASS** |
-| **Total Test Cases** | **162 tests** | 100% pass | **PASS** |
-| **Statement Coverage** | **99.12%** | >= 90% | **PASS** |
-| **Line Coverage** | **99.12%** | >= 90% | **PASS** |
-| **Branch Coverage** | **93.06%** | >= 85% | **PASS** |
-| **Function Coverage** | **97.52%** | >= 85% | **PASS** |
+| **Total Test Cases** | **180 tests** | 100% pass | **PASS** |
+| **Statement Coverage** | **99.24%** | >= 90% | **PASS** |
+| **Line Coverage** | **99.24%** | >= 90% | **PASS** |
+| **Branch Coverage** | **94.12%** | >= 85% | **PASS** |
+| **Function Coverage** | **97.80%** | >= 85% | **PASS** |
 | **Automated Component a11y Tests** | **10 components** | 0 violations | **PASS** |
 | **Playwright E2E User Flows** | **3 flows** | Completed | **PASS** |
 

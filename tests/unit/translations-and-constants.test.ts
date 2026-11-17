@@ -133,5 +133,26 @@ describe('Translations & Constants Configuration Unit Tests', () => {
       expect(GEMINI_TOKEN_BUDGETS.STRUCTURED_PLAN).toBeGreaterThanOrEqual(1000);
       expect(GEMINI_TOKEN_BUDGETS.STREAMING_CHAT).toBeGreaterThanOrEqual(500);
     });
+
+    it('verifies what-if toggle translations and community bulletin keys exist across languages', () => {
+      supportedLanguages.forEach((lang) => {
+        expect(TRANSLATIONS[lang].whatIfTab).toBeDefined();
+        expect(TRANSLATIONS[lang].communityTab).toBeDefined();
+        expect(TRANSLATIONS[lang].chatTab).toBeDefined();
+        expect(TRANSLATIONS[lang].routinesTab).toBeDefined();
+        expect(TRANSLATIONS[lang].indoorHacksTab).toBeDefined();
+        expect(TRANSLATIONS[lang].sustainableTab).toBeDefined();
+      });
+    });
+
+    it('verifies winter smog and inversion warning keys exist across languages', () => {
+      supportedLanguages.forEach((lang) => {
+        expect(TRANSLATIONS[lang].winterSmogContext).toBeDefined();
+        expect(TRANSLATIONS[lang].inversionWarning).toBeDefined();
+        expect(TRANSLATIONS[lang].fallbackBadge).toBeDefined();
+        expect(TRANSLATIONS[lang].generatePlanBtn).toBeDefined();
+        expect(TRANSLATIONS[lang].generatingPlanBtn).toBeDefined();
+      });
+    });
   });
 });

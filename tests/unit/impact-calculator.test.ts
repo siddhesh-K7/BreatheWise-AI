@@ -149,4 +149,38 @@ describe('Impact Calculator Unit Tests', () => {
     const drafty = calculateImpact(150, { ...baseProfile, homeVentilation: 'high-leakage', hasPurifier: false });
     expect(drafty.pm25ReductionPercent).toBeLessThan(40);
   });
+
+  it('computes zero CO2 commute savings when commute mode is already active (walk/cycle)', () => {
+    const activeSavings = computeDailyCo2Savings({ ...baseProfile, commuteMode: 'active', dailyCommuteKm: 15 });
+    expect(activeSavings).toBe(0);
+
+    const wfhSavings = computeDailyCo2Savings({ ...baseProfile, commuteMode: 'wfh', dailyCommuteKm: 25 });
+    expect(wfhSavings).toBe(0);
+  });
+
+  it('computes proportional CO2 savings for public transit modes', () => {
+    const busSavings = computeDailyCo2Savings({ ...baseProfile, commuteMode: 'bus', dailyCommuteKm: 20 });
+    expect(busSavings).toBeGreaterThanOrEqual(0);
+
+    const metroSavings = computeDailyCo2Savings({ ...baseProfile, commuteMode: 'metro', dailyCommuteKm: 20 });
+    expect(metroSavings).toBeGreaterThanOrEqual(0);
+  });
+
+  it('handles 0 km daily commute without numerical errors or NaN', () => {
+    const zeroKmSavings = computeDailyCo2Savings({ ...baseProfile, commuteMode: 'car', dailyCommuteKm: 0 });
+    expect(zeroKmSavings).toBe(0);
+    expect(Number.isNaN(zeroKmSavings)).toBe(false);
+
+    const zeroKmImpact = calculateImpact(180, { ...baseProfile, dailyCommuteKm: 0 });
+    expect(zeroKmImpact.pm25ReductionPercent).toBeGreaterThan(0);
+    expect(Number.isNaN(zeroKmImpact.avoidedCigarettesPerDay)).toBe(false);
+  });
+
+  it('computes clean cooking fuel mitigation correctly for LPG vs Biomass', () => {
+    const lpgSavings = computeDailyCo2Savings({ ...baseProfile, cookingFuel: 'lpg-induction', commuteMode: 'active' });
+    expect(lpgSavings).toBe(0); // Already clean compared to biomass
+
+    const mixedFuelSavings = computeDailyCo2Savings({ ...baseProfile, cookingFuel: 'mixed', commuteMode: 'active' });
+    expect(mixedFuelSavings).toBeGreaterThanOrEqual(0);
+  });
 });

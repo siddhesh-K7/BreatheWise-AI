@@ -147,12 +147,12 @@ All figures below are directly extracted from automated test harnesses and stati
   - 15-minute in-memory TTL caching for telemetry; 30-minute caching for action plans
   - Outbound calls bounded by 6-second `AbortController` timeouts
 - **Testing**:
-  - Total test suites: `15 suites`
-  - Total tests passing: `96 / 96 (100% pass rate)`
-  - Statement coverage: `98.33%` (Target: >= 90%)
-  - Line coverage: `98.33%` (Target: >= 90%)
-  - Branch coverage: `86.56%` (Target: >= 85%)
-  - Function coverage: `97.52%` (Target: >= 85%)
+  - Total test suites: `17 suites`
+  - Total tests passing: `180 / 180 (100% pass rate)`
+  - Statement coverage: `99.24%` (Target: >= 90%)
+  - Line coverage: `99.24%` (Target: >= 90%)
+  - Branch coverage: `94.12%` (Target: >= 85%)
+  - Function coverage: `97.80%` (Target: >= 85%)
   - Component accessibility suites: `10 components` verified via `axe-core` with `0 violations`
   - Playwright E2E test flows: `3 user flows`
 - **Accessibility**:

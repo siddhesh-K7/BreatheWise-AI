@@ -50,4 +50,32 @@ describe('Memory Cache & Rate Limiter Unit Tests', () => {
     const reqFallback = new Request('https://test.local');
     expect(getClientIp(reqFallback)).toBe('127.0.0.1');
   });
+
+  it('handles spaces and multiple hops in x-forwarded-for header', () => {
+    const reqMulti = new Request('https://test.local', {
+      headers: { 'x-forwarded-for': '  103.21.244.2 , 172.64.0.1, 10.0.0.1  ' },
+    });
+    expect(getClientIp(reqMulti)).toBe('103.21.244.2');
+  });
+
+  it('allows cache overwrite with updated payload', () => {
+    appCache.set('mutable-key', { version: 1 }, 10000);
+    expect(appCache.get<{ version: number }>('mutable-key')?.version).toBe(1);
+
+    appCache.set('mutable-key', { version: 2 }, 10000);
+    expect(appCache.get<{ version: number }>('mutable-key')?.version).toBe(2);
+  });
+
+  it('resets rate limit counter after the window expires', async () => {
+    const burstId = `burst-test-${Date.now()}`;
+    const windowMs = 50;
+    const limit = 2;
+
+    expect(checkRateLimit(burstId, limit, windowMs).allowed).toBe(true);
+    expect(checkRateLimit(burstId, limit, windowMs).allowed).toBe(true);
+    expect(checkRateLimit(burstId, limit, windowMs).allowed).toBe(false);
+
+    await new Promise((resolve) => setTimeout(resolve, windowMs + 20));
+    expect(checkRateLimit(burstId, limit, windowMs).allowed).toBe(true);
+  });
 });

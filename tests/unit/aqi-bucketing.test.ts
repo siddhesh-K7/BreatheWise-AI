@@ -99,4 +99,23 @@ describe('AQI Classification & Smog Inversion Unit Tests', () => {
 
     fetchSpy.mockRestore();
   });
+
+  it('clamps and classifies negative or zero AQI gracefully', () => {
+    expect(classifyAqi(0).category).toBe('good');
+    expect(classifyAqi(-10).category).toBe('good');
+  });
+
+  it('evaluates dispersion index across wind and boundary layer extremes', () => {
+    // Zero wind speed with very shallow boundary layer
+    const stagnant = evaluateSmogInversion(0, 50, 450);
+    expect(stagnant.dispersionIndex).toBeLessThan(0.1);
+    expect(stagnant.isInversionActive).toBe(true);
+    expect(stagnant.smogRiskLevel).toBe('critical');
+
+    // High wind speed (> 25 km/h) with deep planetary boundary layer (> 1500m)
+    const strongWind = evaluateSmogInversion(30, 2000, 35);
+    expect(strongWind.dispersionIndex).toBeGreaterThan(0.8);
+    expect(strongWind.isInversionActive).toBe(false);
+    expect(strongWind.smogRiskLevel).toBe('low');
+  });
 });

@@ -32,7 +32,7 @@ Core Tech Stack:
 - Open-Meteo Air Quality, Weather, and Geocoding APIs
 - WAQI Ground Station Cross-Check API
 - NASA FIRMS VIIRS Thermal Hotspot Telemetry
-- Vitest + Testing Library + axe-core (96 automated tests, WCAG 2.2 AA compliant)
+- Vitest + Testing Library + axe-core (180 automated tests, WCAG 2.2 AA compliant)
 - Playwright E2E automation
 
 Key Highlights & Innovation:
