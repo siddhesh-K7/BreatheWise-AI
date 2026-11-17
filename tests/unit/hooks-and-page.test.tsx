@@ -76,6 +76,28 @@ describe('Custom Hooks & Main Dashboard Page Unit Tests', () => {
       result.current.requestGeolocation();
     });
     expect(result.current.error).toContain('Location access declined');
+
+    // Test unsupported geolocation branch
+    const originalGeo = navigator.geolocation;
+    Object.defineProperty(navigator, 'geolocation', { value: undefined, configurable: true, writable: true });
+    act(() => {
+      result.current.requestGeolocation();
+    });
+    expect(result.current.error).toBe('Geolocation is not supported by your browser.');
+    Object.defineProperty(navigator, 'geolocation', { value: originalGeo, configurable: true, writable: true });
+  });
+
+  it('useAqi handles API failure responses', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ success: false, error: { message: 'Telemetry unavailable' } }),
+    } as Response);
+
+    const { result } = renderHook(() => useAqi());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(result.current.error).toBe('Telemetry unavailable');
   });
 
   it('usePlan manages profile updates and plan generation cycle', async () => {
@@ -114,6 +136,23 @@ describe('Custom Hooks & Main Dashboard Page Unit Tests', () => {
     });
 
     expect(result.current.plan?.summary).toBe('Generated Action Plan');
+
+    // Test API error response
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ success: false, error: { message: 'Plan service unavailable' } }),
+    } as Response);
+    await act(async () => {
+      await result.current.generatePlan({ latitude: 13.08, longitude: 80.27, cityName: 'Chennai' }, 'en');
+    });
+    expect(result.current.error).toBe('Plan service unavailable');
+
+    // Test non-Error exception rejection
+    vi.spyOn(global, 'fetch').mockRejectedValueOnce('raw rejection');
+    await act(async () => {
+      await result.current.generatePlan({ latitude: 13.08, longitude: 80.27, cityName: 'Chennai' }, 'en');
+    });
+    expect(result.current.error).toBe('Plan synthesis failed');
   });
 
   it('renders Home page dashboard end-to-end and triggers plan generation', async () => {

@@ -50,4 +50,53 @@ describe('AQI Classification & Smog Inversion Unit Tests', () => {
       'Open-Meteo API returned status 500'
     );
   });
+
+  it('parses fallback defaults when Open-Meteo returns empty payloads and caches results', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async () => {
+      return new Response(JSON.stringify({}), { status: 200 });
+    });
+
+    const result1 = await fetchAirQualityAndWeather(26.85, 80.95);
+    expect(result1.reading.usAqi).toBe(150);
+    expect(result1.reading.pm25).toBe(60);
+    expect(result1.reading.pm10).toBe(110);
+    expect(result1.reading.hourlyForecast).toEqual([]);
+    expect(result1.weather.temperatureC).toBe(18);
+    expect(result1.weather.relativeHumidity).toBe(65);
+    expect(result1.weather.boundaryLayerMeters).toBe(350);
+
+    // Second call for same quantized coordinates should hit cache
+    const result2 = await fetchAirQualityAndWeather(26.85, 80.95);
+    expect(result2).toBe(result1);
+
+    fetchSpy.mockRestore();
+  });
+
+  it('parses hourly array fallback values when hourly items have undefined entries', async () => {
+    const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(async (url) => {
+      const u = String(url);
+      if (u.includes('air-quality')) {
+        return new Response(
+          JSON.stringify({
+            current: { us_aqi: 160 },
+            hourly: {
+              time: [undefined as unknown as string],
+              pm2_5: [undefined as unknown as number],
+              us_aqi: [undefined as unknown as number],
+            },
+          }),
+          { status: 200 }
+        );
+      }
+      return new Response(JSON.stringify({ current: {}, hourly: {} }), { status: 200 });
+    });
+
+    const result = await fetchAirQualityAndWeather(13.08, 80.27);
+    expect(result.reading.hourlyForecast.length).toBe(1);
+    expect(result.reading.hourlyForecast[0].time).toBe('0:00');
+    expect(result.reading.hourlyForecast[0].pm25).toBe(50);
+    expect(result.reading.hourlyForecast[0].usAqi).toBe(160);
+
+    fetchSpy.mockRestore();
+  });
 });

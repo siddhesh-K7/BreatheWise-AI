@@ -131,3 +131,16 @@ This log records architectural decisions, rationale, trade-offs, and compliance 
 - **FIRMS 500km Radius & Dynamic Advisory**: Updated `DEFAULT_FIRE_RADIUS_KM` to 500km in `firms-service.ts` and `/api/fires` per specification, making seasonal baseline text dynamically format the queried radius.
 - **Geocoding TTL Specification Alignment**: Set `CACHE_TTL_MS.GEOCODING` to 1 hour (`60 * 60 * 1000`) per specification.
 - **Test Suite Expansion**: Added unit tests in `gemini-mocked.test.ts` verifying prompt context grounding and `firms-service.test.ts` verifying 500km default radius, bringing the total suite to 96 passing tests with 98.33% line coverage.
+
+---
+
+## Decision 12: CI Branch Coverage Elevation & Error Path Hardening
+
+- **Problem Identified**: Following the introduction of candidate model failover and static streaming fallback in commit `8c057fd`, branch coverage dropped to 84.78% (below the strict 85% Vitest global threshold), causing GitHub Actions CI run `44062305292` to fail with exit code 1.
+- **Root Cause**: The newly introduced branches in `gemini-service.ts` (model failover loops, outage fallback streaming, chunk exception handling) and edge-case branches in `aqi-service.ts` (missing Open-Meteo telemetry defaults), `api-routes` (disagreement PM2.5 scaling, streaming errors, optional parameters), and components (`HazardousBanner`, `InversionCard`, `StationCrossCheckCard`) were not exercised by tests.
+- **Resolution**:
+  - Expanded `gemini-mocked.test.ts` with dynamically configurable mock models testing primary model 503 failover to secondary candidates, full outage fallback, chunk iteration network exceptions, and plan cache hits.
+  - Expanded `aqi-bucketing.test.ts` to test fallback defaults on sparse/empty Open-Meteo payloads and coordinate quantization cache hits.
+  - Expanded `api-routes.test.ts` with streaming 500 error catch branches, sensor disagreement PM2.5 scaling, and parameter aliases.
+  - Expanded `components.test.tsx` and `station-and-search.test.tsx` testing emergency banner threshold boundaries (`aqi <= 300` vs `> 300`), normal dispersion styling, metric card variants, and network error resilience.
+- **Outcome**: Total test suite increased from 96 to 110 tests across all 15 suites. Statement and line coverage rose to 99.12%, and branch coverage rose from 84.78% to 93.06% (well exceeding the 85% gate threshold). CI and local builds pass with 0 warnings or errors.

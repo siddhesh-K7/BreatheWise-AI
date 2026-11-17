@@ -72,6 +72,36 @@ describe('StationCrossCheckCard & CitySearchBar Unit Tests', () => {
 
     render(<StationCrossCheckCard crossCheck={crossCheckAgree} />);
     expect(screen.getByText(/Sensors agree within tolerance/)).toBeInTheDocument();
+
+    const crossCheckDefaults = {
+      modelAqi: 150,
+      stationReading: {
+        isAvailable: true,
+        stationName: '',
+        stationAqi: 150,
+        distanceKm: undefined,
+        timestamp: '',
+      },
+      disagreementDetected: false,
+      deviation: 0,
+      effectiveSafetyAqi: 150,
+    };
+    render(<StationCrossCheckCard crossCheck={crossCheckDefaults} />);
+    expect(screen.getByText('WAQI Station')).toBeInTheDocument();
+    expect(screen.getByText('Ground Station')).toBeInTheDocument();
+
+    const crossCheckNoReason = {
+      modelAqi: 150,
+      stationReading: {
+        isAvailable: false,
+        statusReason: '',
+      },
+      disagreementDetected: false,
+      deviation: 0,
+      effectiveSafetyAqi: 150,
+    };
+    render(<StationCrossCheckCard crossCheck={crossCheckNoReason} />);
+    expect(screen.getByText(/Operating in Open-Meteo primary mode/)).toBeInTheDocument();
   });
 
   it('renders CitySearchBar, queries autocomplete API, and selects location', async () => {
@@ -154,5 +184,16 @@ describe('StationCrossCheckCard & CitySearchBar Unit Tests', () => {
     const clearBtn = screen.getByLabelText('Clear search query');
     fireEvent.click(clearBtn);
     expect(input.value).toBe('');
+  });
+
+  it('handles fetch exception in CitySearchBar gracefully', async () => {
+    vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network fault'));
+    render(<CitySearchBar onSelectLocation={() => {}} />);
+    const input = screen.getByLabelText('Search city or town');
+    fireEvent.change(input, { target: { value: 'Hyderabad' } });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Hyderabad')).not.toBeInTheDocument();
+    });
   });
 });

@@ -77,6 +77,7 @@ const mockAiPayload = {
 
 let callCount = 0;
 let lastPrompt = '';
+let customGetGenerativeModel: ((opts: any) => any) | null = null;
 
 const mockModelInstance = {
   generateContent: async (prompt: string) => {
@@ -99,7 +100,10 @@ const mockModelInstance = {
 vi.mock('@google/generative-ai', () => {
   return {
     GoogleGenerativeAI: class {
-      getGenerativeModel() {
+      getGenerativeModel(opts: any) {
+        if (customGetGenerativeModel) {
+          return customGetGenerativeModel(opts);
+        }
         return mockModelInstance;
       }
     },
@@ -150,10 +154,13 @@ describe('Gemini Service Mocked Model Tests', () => {
 
   beforeEach(() => {
     process.env.GEMINI_API_KEY = 'mock-key';
+    customGetGenerativeModel = null;
+    callCount = 0;
   });
 
   afterEach(() => {
     delete process.env.GEMINI_API_KEY;
+    customGetGenerativeModel = null;
   });
 
   it('retries on attempt 1 failure and generates plan on attempt 2', async () => {
@@ -212,7 +219,7 @@ describe('Gemini Service Mocked Model Tests', () => {
     // Use unique coordinates to bypass cache
     const testLocation = { ...mockLocation, latitude: 29.11, longitude: 77.88 };
 
-    await generateStructuredPlan(
+    const plan1 = await generateStructuredPlan(
       testLocation,
       mockProfile,
       mockReading,
@@ -228,5 +235,171 @@ describe('Gemini Service Mocked Model Tests', () => {
     expect(lastPrompt).toContain('DISAGREEMENT DETECTED');
     expect(lastPrompt).toContain('safety AQI 295');
     expect(lastPrompt).toContain('Regional Active Fires (500km)');
+
+    // Second call with same coordinates and profile should hit plan cache
+    const plan2 = await generateStructuredPlan(
+      testLocation,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'en',
+      mockFire,
+      mockCrossCheck
+    );
+    expect(plan2).toBe(plan1);
+  });
+
+  it('formats prompt gracefully when fire and station telemetry are omitted or agreed', async () => {
+    const { generateStructuredPlan } = await import('@/services/gemini-service');
+    const uniqueLoc = { ...mockLocation, latitude: 30.15, longitude: 76.54 };
+
+    await generateStructuredPlan(
+      uniqueLoc,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'hi'
+    );
+    expect(lastPrompt).toContain('Regional Fires: Seasonal agricultural burning season');
+    expect(lastPrompt).toContain('Ground station telemetry unconfigured');
+
+    const agreedLoc = { ...mockLocation, latitude: 30.15, longitude: 76.88 };
+    await generateStructuredPlan(
+      agreedLoc,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'ta',
+      undefined,
+      {
+        modelAqi: 220,
+        stationReading: { isAvailable: true, stationAqi: 225, timestamp: '' },
+        disagreementDetected: false,
+        deviation: 5,
+        effectiveSafetyAqi: 220,
+      }
+    );
+    expect(lastPrompt).toContain('[Model and Station agree]');
+  });
+
+  it('fails over to secondary model during plan generation if primary model throws', async () => {
+    const { generateStructuredPlan } = await import('@/services/gemini-service');
+    const failoverLoc = { ...mockLocation, latitude: 31.25, longitude: 75.33 };
+
+    customGetGenerativeModel = (opts: { model: string }) => {
+      if (opts.model === 'gemini-3.8-flash') {
+        throw new Error('Primary model 503 Overloaded');
+      }
+      return {
+        generateContent: async () => ({
+          response: { text: () => JSON.stringify(mockAiPayload) },
+        }),
+      };
+    };
+
+    const plan = await generateStructuredPlan(
+      failoverLoc,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'en'
+    );
+    expect(plan.isFallback).toBe(false);
+    expect(plan.summary).toContain('Custom Gemini Action Plan');
+  });
+
+  it('falls back to deterministic plan when all candidate models fail', async () => {
+    const { generateStructuredPlan } = await import('@/services/gemini-service');
+    const allFailLoc = { ...mockLocation, latitude: 32.45, longitude: 74.88 };
+
+    customGetGenerativeModel = () => {
+      throw new Error('Total outage on all models');
+    };
+
+    const plan = await generateStructuredPlan(
+      allFailLoc,
+      mockProfile,
+      mockReading,
+      mockWeather,
+      mockImpact,
+      'en'
+    );
+    expect(plan.isFallback).toBe(true);
+    expect(plan.summary).toBeDefined();
+  });
+
+  it('fails over to secondary model during streaming chat when primary model throws', async () => {
+    const { streamAirWiseChat } = await import('@/services/gemini-service');
+
+    customGetGenerativeModel = (opts: { model: string }) => {
+      if (opts.model === 'gemini-3.8-flash') {
+        throw new Error('Busy');
+      }
+      return {
+        generateContentStream: async () => ({
+          stream: [
+            { text: () => '' },
+            { text: () => 'Stream from failover model' },
+          ],
+        }),
+      };
+    };
+
+    const stream = await streamAirWiseChat('Hello failover', 190, 'Jaipur', 'en');
+    const reader = stream.getReader();
+    let text = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += new TextDecoder().decode(value);
+    }
+    expect(text).toContain('Stream from failover model');
+  });
+
+  it('falls back to static stream advisory when all candidate models throw in streamAirWiseChat', async () => {
+    const { streamAirWiseChat } = await import('@/services/gemini-service');
+
+    customGetGenerativeModel = () => {
+      throw new Error('All models 429 quota exhausted');
+    };
+
+    const stream = await streamAirWiseChat('Hello outage', undefined, undefined, 'en');
+    const reader = stream.getReader();
+    let text = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += new TextDecoder().decode(value);
+    }
+    expect(text).toContain('AirWise Advisory:');
+    expect(text).toContain('minimize outdoor exposure');
+  });
+
+  it('handles stream iteration exception gracefully with note appended', async () => {
+    const { streamAirWiseChat } = await import('@/services/gemini-service');
+
+    customGetGenerativeModel = () => ({
+      generateContentStream: async () => ({
+        stream: (async function* () {
+          yield { text: () => 'Initial chunk ' };
+          throw new Error('Network socket terminated');
+        })(),
+      }),
+    });
+
+    const stream = await streamAirWiseChat('Crash midstream');
+    const reader = stream.getReader();
+    let text = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += new TextDecoder().decode(value);
+    }
+    expect(text).toContain('Initial chunk');
+    expect(text).toContain('[Stream completed with note: Error: Network socket terminated]');
   });
 });

@@ -12,6 +12,7 @@ import * as aqiService from '@/services/aqi-service';
 import * as geocodingService from '@/services/geocoding-service';
 import * as firmsService from '@/services/firms-service';
 import * as waqiService from '@/services/waqi-service';
+import * as geminiService from '@/services/gemini-service';
 import { errorResponse } from '@/services/api-response';
 
 describe('Serverless API Route Handlers Integration Tests', () => {
@@ -200,6 +201,54 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     const res = await chatHandler(req);
     expect(res.status).toBe(200);
     expect(res.headers.get('Content-Type')).toContain('text/plain');
+
+    vi.spyOn(geminiService, 'streamAirWiseChat').mockRejectedValueOnce(new Error('Fatal stream failure'));
+    const reqErr = new Request('https://test.local/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'What is PM2.5?', language: 'en', currentAqi: 150 }),
+    });
+    const resErr = await chatHandler(reqErr);
+    expect(resErr.status).toBe(500);
+  });
+
+  it('POST /api/recommendations scales effective PM2.5 when sensor disagreement occurs', async () => {
+    const payload = {
+      location: { latitude: 28.61, longitude: 77.23, cityName: 'Delhi' },
+      profile: {
+        hasChildren: true,
+        hasElderly: false,
+        respiratorySensitivity: false,
+        commuteMode: 'car',
+        dailyCommuteKm: 20,
+        homeVentilation: 'standard',
+        hasPurifier: false,
+        cookingFuel: 'lpg-induction',
+        workSetting: 'hybrid',
+      },
+      language: 'en',
+    };
+
+    vi.spyOn(waqiService, 'fetchWaqiStationReading').mockResolvedValueOnce({
+      isAvailable: true,
+      stationName: 'Anand Vihar',
+      stationAqi: 300,
+      dominantPollutant: 'PM2.5',
+      timestamp: '2026-11-17T09:00:00Z',
+      distanceKm: 6.2,
+    });
+
+    const req = new Request('https://test.local/api/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const res = await planHandler(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.success).toBe(true);
+    expect(json.data.quantifiedImpact).toBeDefined();
   });
 
   it('GET /api/geocoding handles validation, rate limiting, and returns candidates', async () => {
@@ -213,6 +262,10 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     const jsonValid = await resValid.json();
     expect(jsonValid.success).toBe(true);
     expect(Array.isArray(jsonValid.data)).toBe(true);
+
+    const reqByName = new Request('https://test.local/api/geocoding?name=delhi');
+    const resByName = await geocodingHandler(reqByName);
+    expect(resByName.status).toBe(200);
 
     vi.spyOn(rateLimiter, 'checkRateLimit').mockReturnValueOnce({
       allowed: false,
@@ -273,6 +326,12 @@ describe('Serverless API Route Handlers Integration Tests', () => {
     const jsonValid = await resValid.json();
     expect(jsonValid.success).toBe(true);
     expect(jsonValid.data.crossCheck).toBeDefined();
+
+    const reqNoModel = new Request('https://test.local/api/waqi?lat=28.61&lon=77.23');
+    const resNoModel = await waqiHandler(reqNoModel);
+    expect(resNoModel.status).toBe(200);
+    const jsonNoModel = await resNoModel.json();
+    expect(jsonNoModel.data.crossCheck).toBeNull();
 
     vi.spyOn(rateLimiter, 'enforceRateLimit').mockReturnValueOnce(
       errorResponse('Rate limit exceeded. Please wait a moment.', 'TOO_MANY_REQUESTS', 429)

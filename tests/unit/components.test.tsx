@@ -1,8 +1,10 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { TRANSLATIONS } from '@/config/translations';
+import { TRANSLATIONS, getTranslation } from '@/config/translations';
 import { AqiOverview } from '@/components/aqi/AqiOverview';
+import { HazardousBanner } from '@/components/aqi/HazardousBanner';
+import { InversionCard } from '@/components/aqi/InversionCard';
 import { StreamingChat } from '@/components/chat/StreamingChat';
 import { PlanDisplay } from '@/components/plan/PlanDisplay';
 import { Navbar } from '@/components/layout/Navbar';
@@ -66,11 +68,43 @@ describe('UI Presentation Components Unit Tests', () => {
   });
 
   it('renders MetricCard with labels, values, and variants', () => {
-    const { rerender } = render(<MetricCard label="Cigarettes Avoided" value="4.5" unit="cig/day" subtext="Daily reduction" variant="highlight" />);
+    const { rerender } = render(<MetricCard label="Cigarettes Avoided" value="4.5" unit="cig/day" subtext="Daily reduction" variant="highlight" icon={<span data-testid="metric-icon">icon</span>} />);
     expect(screen.getByText('Cigarettes Avoided')).toBeInTheDocument();
+    expect(screen.getByTestId('metric-icon')).toBeInTheDocument();
 
     rerender(<MetricCard label="CO2 Avoided" value="2.8" variant="danger" />);
     expect(screen.getByText('CO2 Avoided')).toBeInTheDocument();
+
+    rerender(<MetricCard label="Default Variant" value="10" variant="default" />);
+    expect(screen.getByText('Default Variant')).toBeInTheDocument();
+  });
+
+  it('renders HazardousBanner only when AQI > 300', () => {
+    const { container, rerender } = render(<HazardousBanner aqi={250} t={t} />);
+    expect(container.firstChild).toBeNull();
+
+    rerender(<HazardousBanner aqi={350} t={t} />);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText(/AQI 350/)).toBeInTheDocument();
+  });
+
+  it('renders InversionCard under normal dispersion when inversion is inactive', () => {
+    const normalWeather = {
+      temperatureC: 25,
+      relativeHumidity: 45,
+      windSpeedKmh: 14,
+      boundaryLayerMeters: 800,
+      isInversionActive: false,
+      dispersionIndex: 3.1,
+      smogRiskLevel: 'low' as const,
+    };
+    render(<InversionCard weather={normalWeather} fireSummary={null} t={t} />);
+    expect(screen.getByText('Normal Dispersion')).toBeInTheDocument();
+  });
+
+  it('falls back to English in getTranslation for unsupported language keys', () => {
+    const fallbackDict = getTranslation('xx' as any);
+    expect(fallbackDict.appTitle).toBe(TRANSLATIONS.en.appTitle);
   });
 
   it('renders Button across all variants, sizes, and loading state', () => {
@@ -94,6 +128,10 @@ describe('UI Presentation Components Unit Tests', () => {
       expect(screen.getByText(cat)).toBeInTheDocument();
       unmount();
     });
+
+    const { unmount: unmountUnknown } = render(<AqiBadge category={'unrecognized' as any} label="Unknown Category" />);
+    expect(screen.getByText('Unknown Category')).toBeInTheDocument();
+    unmountUnknown();
   });
 
   it('exercises all interactive toggles in WhatIfSimulator', () => {
