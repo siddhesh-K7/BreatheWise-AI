@@ -23,7 +23,7 @@ export function HazardousBanner({ aqi, t }: HazardousBannerProps) {
   ];
 
   return (
-    <aside
+    <div
       className="p-5 rounded-2xl border-2 border-rose-500 bg-rose-950/80 text-rose-100 shadow-xl shadow-rose-950/50 mb-8"
       role="alert"
       aria-live="assertive"
@@ -52,6 +52,6 @@ export function HazardousBanner({ aqi, t }: HazardousBannerProps) {
           </div>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }
