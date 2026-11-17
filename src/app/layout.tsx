@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SkipLink } from '@/components/layout/SkipLink';
 
@@ -18,7 +18,12 @@ export const metadata: Metadata = {
     'clean air',
   ],
   authors: [{ name: 'Sabarish R', url: 'https://github.com/SabarishR08' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
