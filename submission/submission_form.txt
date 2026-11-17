@@ -22,6 +22,10 @@ Demo Video Link / Path:
 https://drive.google.com/file/d/10_NhPz4X2wbol_FBEOll4otHIVWPuQpi/view?usp=sharing
 (Local: recordings/airwise_demo_walkthrough_1080p.mp4)
 
+LinkedIn Post URL:
+https://www.linkedin.com/posts/sabarishr08_promptwars-hack2skill-genai-ugcPost-7528468890159316992-eQ8q
+(Short: https://lnkd.in/p/gbap7FBp)
+
 Problem Statement Alignment:
 AirWise addresses winter smog, stubble burning, and thermal inversions across Indian cities. It combines live Open-Meteo atmospheric telemetry with WAQI ground station cross-checks and NASA FIRMS thermal anomaly detection. Google Gemini 1.5 Flash generates tailored, low-emission daily routines, cost-tiered indoor air hacks, and sustainable commute/fuel alternatives with deterministic impact accounting.
 
