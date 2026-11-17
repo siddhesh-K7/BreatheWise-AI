@@ -56,9 +56,9 @@ export function Navbar({ currentLanguage, onLanguageChange }: NavbarProps) {
               <button
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
-                className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors min-h-[36px] ${
+                className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-colors min-h-[36px] ${
                   isActive
-                    ? 'bg-emerald-600 text-white shadow-sm'
+                    ? 'bg-emerald-700 text-white shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
                 }`}
                 aria-pressed={isActive}

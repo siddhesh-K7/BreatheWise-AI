@@ -23,14 +23,14 @@ export function Footer({ t }: FooterProps) {
           </div>
         </div>
 
-        <div className="text-[11px] text-slate-500 space-y-1">
+        <div className="text-[11px] text-slate-400 space-y-1">
           <p>
             Atmospheric telemetry powered by{' '}
             <a
               href="https://open-meteo.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:underline"
+              className="text-slate-300 underline hover:text-white"
             >
               Open-Meteo (CC BY 4.0)
             </a>
@@ -39,7 +39,7 @@ export function Footer({ t }: FooterProps) {
               href="https://waqi.info/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:underline"
+              className="text-slate-300 underline hover:text-white"
             >
               World Air Quality Index (WAQI / aqicn.org)
             </a>
@@ -48,7 +48,7 @@ export function Footer({ t }: FooterProps) {
               href="https://firms.modaps.eosdis.nasa.gov/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:underline"
+              className="text-slate-300 underline hover:text-white"
             >
               NASA FIRMS VIIRS
             </a>

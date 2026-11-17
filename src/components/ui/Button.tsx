@@ -24,7 +24,7 @@ export function Button({
     'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]';
 
   const variantClasses = {
-    primary: 'bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700',
+    primary: 'bg-emerald-700 text-white hover:bg-emerald-600 active:bg-emerald-800 font-semibold',
     secondary:
       'bg-slate-800 text-slate-100 hover:bg-slate-700 active:bg-slate-900 border border-slate-700',
     outline: 'border border-slate-600 text-slate-200 hover:bg-slate-800 active:bg-slate-900',
