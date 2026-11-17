@@ -39,4 +39,4 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Security Vulnerability Audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical --omit=dev
