@@ -64,7 +64,11 @@ export function evaluateSmogInversion(
   windSpeedKmh: number,
   boundaryLayerMeters: number,
   aqi: number
-): { isInversionActive: boolean; dispersionIndex: number; smogRiskLevel: WeatherContext['smogRiskLevel'] } {
+): {
+  isInversionActive: boolean;
+  dispersionIndex: number;
+  smogRiskLevel: WeatherContext['smogRiskLevel'];
+} {
   const windMps = windSpeedKmh / 3.6;
   const dispersionIndex = Number(((windMps * boundaryLayerMeters) / 100).toFixed(2));
   const isInversionActive =

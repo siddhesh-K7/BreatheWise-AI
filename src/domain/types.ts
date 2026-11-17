@@ -12,12 +12,7 @@ export type SupportedLanguage = 'en' | 'ta' | 'hi';
  * Categorical health risk tier conforming to US EPA and Indian CPCB standards.
  */
 export type AqiCategory =
-  | 'good'
-  | 'moderate'
-  | 'unhealthy-sensitive'
-  | 'unhealthy'
-  | 'very-unhealthy'
-  | 'hazardous';
+  'good' | 'moderate' | 'unhealthy-sensitive' | 'unhealthy' | 'very-unhealthy' | 'hazardous';
 
 /**
  * Hourly particulate matter and AQI sample point.

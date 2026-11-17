@@ -29,7 +29,9 @@ export function calculateImpact(ambientPm25: number, profile: UserProfile): Quan
 
   // Compute daily inhaled dose saved in micrograms
   const baselineInhaled =
-    safePm25 * (18 * BREATHING_RATES_M3_PER_HOUR.SEDENTARY_INDOOR + 6 * BREATHING_RATES_M3_PER_HOUR.MODERATE_COMMUTE);
+    safePm25 *
+    (18 * BREATHING_RATES_M3_PER_HOUR.SEDENTARY_INDOOR +
+      6 * BREATHING_RATES_M3_PER_HOUR.MODERATE_COMMUTE);
   const interventionInhaled =
     safePm25 *
     (18 * BREATHING_RATES_M3_PER_HOUR.SEDENTARY_INDOOR * (1 - indoorEfficiency) +
@@ -91,7 +93,8 @@ export function computeDailyCo2Savings(profile: UserProfile): number {
     const diff = TRANSIT_EMISSION_FACTORS.PETROL_CAR_SOLO - TRANSIT_EMISSION_FACTORS.ELECTRIC_METRO;
     co2SavingsGrams += diff * profile.dailyCommuteKm;
   } else if (profile.commuteMode === 'two-wheeler') {
-    const diff = TRANSIT_EMISSION_FACTORS.TWO_WHEELER_PETROL - TRANSIT_EMISSION_FACTORS.ELECTRIC_METRO;
+    const diff =
+      TRANSIT_EMISSION_FACTORS.TWO_WHEELER_PETROL - TRANSIT_EMISSION_FACTORS.ELECTRIC_METRO;
     co2SavingsGrams += diff * profile.dailyCommuteKm;
   }
 

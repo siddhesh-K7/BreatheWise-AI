@@ -51,7 +51,16 @@ export async function generateStructuredPlan(
   }
 
   const prompt = buildStructuredPlanPrompt(location, profile, reading, weather, language);
-  const plan = await executePlanGenerationWithRetry(client, prompt, location, profile, reading, weather, impact, language);
+  const plan = await executePlanGenerationWithRetry(
+    client,
+    prompt,
+    location,
+    profile,
+    reading,
+    weather,
+    impact,
+    language
+  );
 
   appCache.set(cacheKey, plan, 30 * 60 * 1000);
   return plan;
@@ -133,7 +142,12 @@ Output strictly valid JSON matching this schema:
 /**
  * Computes deterministic lookup key for caching identical plan queries.
  */
-function buildPlanCacheKey(loc: LocationQuery, prof: UserProfile, aqi: number, lang: SupportedLanguage): string {
+function buildPlanCacheKey(
+  loc: LocationQuery,
+  prof: UserProfile,
+  aqi: number,
+  lang: SupportedLanguage
+): string {
   const coord = `${loc.latitude.toFixed(2)},${loc.longitude.toFixed(2)}`;
   const aqiBucket = Math.floor(aqi / 25) * 25; // 25-point AQI buckets
   return `plan:${coord}:${aqiBucket}:${prof.commuteMode}:${prof.hasPurifier}:${lang}`;
@@ -152,7 +166,9 @@ export async function streamAirWiseChat(
   const safeMessage = sanitizeUserPrompt(message);
 
   if (!client) {
-    return createStaticStream('AirWise AI assistant is operating in offline mode. Please refer to your action plan recommendations above.');
+    return createStaticStream(
+      'AirWise AI assistant is operating in offline mode. Please refer to your action plan recommendations above.'
+    );
   }
 
   const systemInstruction = `You are AirWise AI, a verified urban air quality and winter smog advisor.

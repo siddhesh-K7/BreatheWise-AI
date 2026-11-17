@@ -65,39 +65,47 @@ export const chatRequestSchema = z.object({
  */
 export const structuredPlanOutputSchema = z.object({
   summary: z.string().min(10).max(1000),
-  dailyRoutines: z.array(
-    z.object({
-      timeBlock: z.string(),
-      action: z.string(),
-      rationale: z.string(),
-      emissionReduction: z.string(),
-      targetAqiCondition: z.string(),
-    })
-  ).min(2),
-  indoorHacks: z.array(
-    z.object({
-      title: z.string(),
-      description: z.string(),
-      costTier: z.enum(['free', 'under_inr_500', 'over_inr_500']),
-      costLabel: z.string(),
-      expectedReductionPercent: z.number().min(0).max(100),
-    })
-  ).min(3),
-  sustainableAlternatives: z.array(
-    z.object({
-      category: z.enum(['commute', 'cooking', 'waste', 'energy']),
-      currentPractice: stringOrFallback(),
-      sustainableChoice: z.string(),
-      co2Impact: z.string(),
-    })
-  ).min(2),
-  healthGuidance: z.array(
-    z.object({
-      group: z.enum(['infants_children', 'adults', 'elderly_sensitive']),
-      advisory: z.string(),
-      criticalRestrictions: z.array(z.string()),
-    })
-  ).min(2),
+  dailyRoutines: z
+    .array(
+      z.object({
+        timeBlock: z.string(),
+        action: z.string(),
+        rationale: z.string(),
+        emissionReduction: z.string(),
+        targetAqiCondition: z.string(),
+      })
+    )
+    .min(2),
+  indoorHacks: z
+    .array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        costTier: z.enum(['free', 'under_inr_500', 'over_inr_500']),
+        costLabel: z.string(),
+        expectedReductionPercent: z.number().min(0).max(100),
+      })
+    )
+    .min(3),
+  sustainableAlternatives: z
+    .array(
+      z.object({
+        category: z.enum(['commute', 'cooking', 'waste', 'energy']),
+        currentPractice: stringOrFallback(),
+        sustainableChoice: z.string(),
+        co2Impact: z.string(),
+      })
+    )
+    .min(2),
+  healthGuidance: z
+    .array(
+      z.object({
+        group: z.enum(['infants_children', 'adults', 'elderly_sensitive']),
+        advisory: z.string(),
+        criticalRestrictions: z.array(z.string()),
+      })
+    )
+    .min(2),
   winterSmogAdvisory: z.object({
     diwaliStubbleAlert: z.string(),
     inversionGuidance: z.string(),
@@ -120,7 +128,10 @@ function stringOrFallback() {
 export function sanitizeUserPrompt(input: string): string {
   return input
     .replace(/<\/?[^>]+(>|$)/g, '') // Strip HTML/XML tags
-    .replace(/\b(ignore previous instructions|system instruction|override prompt)\b/gi, '[filtered]')
+    .replace(
+      /\b(ignore previous instructions|system instruction|override prompt)\b/gi,
+      '[filtered]'
+    )
     .replace(/[`${}]/g, '') // Strip interpolation markers
     .trim()
     .slice(0, 2000);

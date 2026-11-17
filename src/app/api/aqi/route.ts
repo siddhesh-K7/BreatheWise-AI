@@ -26,9 +26,18 @@ export async function GET(req: Request) {
   const lat = parseFloat(latStr || '');
   const lon = parseFloat(lonStr || '');
 
-  const validation = locationQuerySchema.safeParse({ latitude: lat, longitude: lon, cityName: city });
+  const validation = locationQuerySchema.safeParse({
+    latitude: lat,
+    longitude: lon,
+    cityName: city,
+  });
   if (!validation.success) {
-    return errorResponse('Invalid coordinates or city name.', 'VALIDATION_ERROR', 400, validation.error.flatten());
+    return errorResponse(
+      'Invalid coordinates or city name.',
+      'VALIDATION_ERROR',
+      400,
+      validation.error.flatten()
+    );
   }
 
   try {
@@ -39,6 +48,11 @@ export async function GET(req: Request) {
       weather,
     });
   } catch (err) {
-    return errorResponse('Failed to fetch atmospheric telemetry.', 'UPSTREAM_ERROR', 502, String(err));
+    return errorResponse(
+      'Failed to fetch atmospheric telemetry.',
+      'UPSTREAM_ERROR',
+      502,
+      String(err)
+    );
   }
 }

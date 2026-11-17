@@ -17,7 +17,11 @@ export async function POST(req: Request) {
   const ip = getClientIp(req);
   const rateLimit = checkRateLimit(`plan:${ip}`, 30);
   if (!rateLimit.allowed) {
-    return errorResponse('Too many plan generation requests. Please wait a moment.', 'TOO_MANY_REQUESTS', 429);
+    return errorResponse(
+      'Too many plan generation requests. Please wait a moment.',
+      'TOO_MANY_REQUESTS',
+      429
+    );
   }
 
   let body: unknown;
@@ -29,15 +33,30 @@ export async function POST(req: Request) {
 
   const validation = planRequestSchema.safeParse(body);
   if (!validation.success) {
-    return errorResponse('Validation failed on request parameters.', 'VALIDATION_ERROR', 400, validation.error.flatten());
+    return errorResponse(
+      'Validation failed on request parameters.',
+      'VALIDATION_ERROR',
+      400,
+      validation.error.flatten()
+    );
   }
 
   const { location, profile, language } = validation.data;
 
   try {
-    const { reading, weather } = await fetchAirQualityAndWeather(location.latitude, location.longitude);
+    const { reading, weather } = await fetchAirQualityAndWeather(
+      location.latitude,
+      location.longitude
+    );
     const impact = calculateImpact(reading.pm25, profile);
-    const plan = await generateStructuredPlan(location, profile, reading, weather, impact, language);
+    const plan = await generateStructuredPlan(
+      location,
+      profile,
+      reading,
+      weather,
+      impact,
+      language
+    );
 
     return successResponse(plan);
   } catch (err) {

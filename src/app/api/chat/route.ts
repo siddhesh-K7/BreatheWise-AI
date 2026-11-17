@@ -27,7 +27,12 @@ export async function POST(req: Request) {
 
   const validation = chatRequestSchema.safeParse(body);
   if (!validation.success) {
-    return errorResponse('Invalid chat request parameters.', 'VALIDATION_ERROR', 400, validation.error.flatten());
+    return errorResponse(
+      'Invalid chat request parameters.',
+      'VALIDATION_ERROR',
+      400,
+      validation.error.flatten()
+    );
   }
 
   const { message, language, currentAqi, cityName } = validation.data;
@@ -42,6 +47,11 @@ export async function POST(req: Request) {
       },
     });
   } catch (err) {
-    return errorResponse('Failed to establish conversational stream.', 'STREAM_ERROR', 500, String(err));
+    return errorResponse(
+      'Failed to establish conversational stream.',
+      'STREAM_ERROR',
+      500,
+      String(err)
+    );
   }
 }

@@ -36,7 +36,12 @@ export function successResponse<T>(data: T, status: number = 200) {
 /**
  * Returns a standardized JSON error response.
  */
-export function errorResponse(message: string, code: string = 'BAD_REQUEST', status: number = 400, details?: unknown) {
+export function errorResponse(
+  message: string,
+  code: string = 'BAD_REQUEST',
+  status: number = 400,
+  details?: unknown
+) {
   const body: ApiErrorResponse = {
     success: false,
     error: {
