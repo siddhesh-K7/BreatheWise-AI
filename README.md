@@ -3,17 +3,15 @@
 [![CI](https://github.com/SabarishR08/airwise-urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/SabarishR08/airwise-urban-air-quality-assistant/actions/workflows/ci.yml)
 [![Coverage: 98%](https://img.shields.io/badge/Coverage-98%25-emerald.svg)](docs/METRICS.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/Deployment-Vercel%20Live-black?logo=vercel)](https://airwise-urban-air-quality-assistant.vercel.app)
 [![WCAG 2.2 AA](https://img.shields.io/badge/A11y-WCAG%202.2%20AA-success)](docs/METRICS.md)
 
 Severe winter smog, seasonal agricultural stubble burning, and ground-level atmospheric temperature inversions trap hazardous particulate matter across urban basins every winter, severely threatening children, elderly populations, and outdoor workers. **AirWise** is a production-grade, GenAI-powered urban air quality assistant that connects real-time Open-Meteo atmospheric telemetry with Google Gemini structured plan synthesis to generate personalized, low-emission daily routines, cost-tiered indoor air hacks, and sustainable habit alternatives. All health claims and emissions benefits are calculated by deterministic, peer-reviewed mathematical models (Berkeley Earth cigarette equivalence and CPCB transit emission factors) ensuring absolute quantitative transparency.
 
 ---
 
-## 🔗 Live Links
-- **Production URL**: [https://airwise-urban-air-quality-assistant.vercel.app](https://airwise-urban-air-quality-assistant.vercel.app)
+## 🔗 Project Links
+- **GitHub Repository**: [https://github.com/siddhesh-K7/BreatheWise-AI](https://github.com/siddhesh-K7/BreatheWise-AI)
 - **Demo Video (1080p Walkthrough)**: [Watch 1080p Walkthrough Video (Google Drive)](https://drive.google.com/file/d/10_NhPz4X2wbol_FBEOll4otHIVWPuQpi/view?usp=sharing) | [Local File](recordings/airwise_demo_walkthrough_1080p.mp4)
-- **GitHub Repository**: [https://github.com/SabarishR08/airwise-urban-air-quality-assistant](https://github.com/SabarishR08/airwise-urban-air-quality-assistant)
 - **LinkedIn Submission Post**: [View on LinkedIn](https://www.linkedin.com/posts/sabarishr08_promptwars-hack2skill-genai-ugcPost-7528468890159316992-eQ8q)
 
 ---
