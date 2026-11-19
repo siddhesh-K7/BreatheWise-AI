@@ -2,7 +2,7 @@
 
 **Project Name**: AirWise - Urban Air Quality Assistant  
 **Challenge**: Hack2skill PromptWars Virtual, Challenge 6 (Urban Air Quality Assistant)  
-**Submission Repository**: [https://github.com/SabarishR08/airwise-urban-air-quality-assistant](https://github.com/SabarishR08/airwise-urban-air-quality-assistant)  
+**Submission Repository**: [https://github.com/siddhesh-K7/BreatheWise-AI](https://github.com/siddhesh-K7/BreatheWise-AI)  
 **Live Production URL**: [https://airwise-urban-air-quality-assistant.vercel.app](https://airwise-urban-air-quality-assistant.vercel.app)  
 **Demo Walkthrough Video**: `recordings/airwise_demo_walkthrough_1080p.mp4` (1080p H.264, 5.78 MB, 84 seconds)  
 **Audit Date**: November 17, 2026  

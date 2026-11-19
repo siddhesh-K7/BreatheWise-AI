@@ -48,4 +48,4 @@ The following headers are enforced in `next.config.mjs`:
 
 ## Reporting a Vulnerability
 
-Please report security issues or vulnerabilities responsibly via GitHub Private Security Advisories on [SabarishR08/airwise-urban-air-quality-assistant](https://github.com/SabarishR08/airwise-urban-air-quality-assistant/security/advisories).
+Please report security issues or vulnerabilities responsibly via GitHub Private Security Advisories on [siddhesh-K7/BreatheWise-AI](https://github.com/siddhesh-K7/BreatheWise-AI/security/advisories).

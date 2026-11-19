@@ -2,7 +2,7 @@
 
 **Project Name**: AirWise AI — Urban Air Quality & Family Protection Assistant  
 **Repository**: [https://github.com/siddhesh-K7/BreatheWise-AI](https://github.com/siddhesh-K7/BreatheWise-AI)  
-**Upgraded From**: `SabarishR08/airwise-urban-air-quality-assistant`  
+**Repository**: `siddhesh-K7/BreatheWise-AI`  
 **Evaluation Target**: Hack2skill / Google Skills Challenge 6  
 **Date of Audit**: November 19, 2026  
 **Auditor**: Senior Full-Stack QA Automation & Security Testing Lead  

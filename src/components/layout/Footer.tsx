@@ -65,7 +65,7 @@ export function Footer({ t }: FooterProps) {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/SabarishR08/airwise-urban-air-quality-assistant"
+              href="https://github.com/siddhesh-K7/BreatheWise-AI"
               target="_blank"
               rel="noopener noreferrer"
               className="text-emerald-400 hover:text-emerald-300 underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-emerald-500 rounded"
