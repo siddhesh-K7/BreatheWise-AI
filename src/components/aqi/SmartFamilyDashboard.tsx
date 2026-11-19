@@ -21,6 +21,8 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
   const [transportMode, setTransportMode] = useState('metro');
   const [savedCo2, setSavedCo2] = useState<number | null>(null);
 
+  const cityName = location?.cityName || location?.name || 'Delhi NCR';
+
   useEffect(() => {
     // Fetch profile
     fetch('/api/profile?userId=guest_user')
@@ -30,7 +32,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
 
     // Fetch routine
     if (reading) {
-      fetch(`/api/routines?userId=guest_user&city=${encodeURIComponent(location.name)}&aqi=${reading.usAqi}`)
+      fetch(`/api/routines?userId=guest_user&city=${encodeURIComponent(cityName)}&aqi=${reading.usAqi}`)
         .then((r) => r.json())
         .then((d) => d.data?.routine?.tasks && setRoutineTasks(d.data.routine.tasks))
         .catch((e) => console.warn(e));
@@ -41,7 +43,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
       .then((r) => r.json())
       .then((d) => d.data?.alerts && setAlerts(d.data.alerts))
       .catch((e) => console.warn(e));
-  }, [location, reading]);
+  }, [cityName, reading]);
 
   const loadCityComparison = () => {
     fetch('/api/cities/compare')
@@ -94,7 +96,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Your Family&apos;s Air Quality Action Today</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Tailored for {profile?.name || 'Your Household'} • {location.name} (AQI {aqi})
+            Tailored for {profile?.name || 'Your Household'} • {cityName} (AQI {aqi})
           </p>
         </div>
 
