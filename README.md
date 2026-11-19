@@ -1,6 +1,6 @@
 # 🌫️ AirWise — Urban Air Quality & Winter Smog Action Engine
 
-[![CI](https://github.com/SabarishR08/airwise-urban-air-quality-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/SabarishR08/airwise-urban-air-quality-assistant/actions/workflows/ci.yml)
+[![CI](https://github.com/siddhesh-K7/BreatheWise-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/siddhesh-K7/BreatheWise-AI/actions/workflows/ci.yml)
 [![Coverage: 98%](https://img.shields.io/badge/Coverage-98%25-emerald.svg)](docs/METRICS.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![WCAG 2.2 AA](https://img.shields.io/badge/A11y-WCAG%202.2%20AA-success)](docs/METRICS.md)
@@ -175,8 +175,8 @@ Read the exhaustive formulation and references in [docs/METHODOLOGY.md](docs/MET
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/SabarishR08/airwise-urban-air-quality-assistant.git
-   cd airwise-urban-air-quality-assistant
+   git clone https://github.com/siddhesh-K7/BreatheWise-AI.git
+   cd BreatheWise-AI
    ```
 2. Install dependencies:
    ```bash

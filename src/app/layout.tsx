@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'urban resilience',
     'clean air',
   ],
-  authors: [{ name: 'Sabarish R', url: 'https://github.com/SabarishR08' }],
+  authors: [{ name: 'Siddhesh', url: 'https://github.com/siddhesh-K7' }],
 };
 
 export const viewport: Viewport = {
