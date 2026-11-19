@@ -9,13 +9,6 @@ Severe winter smog, seasonal agricultural stubble burning, and ground-level atmo
 
 ---
 
-## 🔗 Project Links
-- **GitHub Repository**: [https://github.com/siddhesh-K7/BreatheWise-AI](https://github.com/siddhesh-K7/BreatheWise-AI)
-- **Demo Video (1080p Walkthrough)**: [Watch 1080p Walkthrough Video (Google Drive)](https://drive.google.com/file/d/10_NhPz4X2wbol_FBEOll4otHIVWPuQpi/view?usp=sharing) | [Local File](recordings/airwise_demo_walkthrough_1080p.mp4)
-- **LinkedIn Submission Post**: [View on LinkedIn](https://www.linkedin.com/posts/sabarishr08_promptwars-hack2skill-genai-ugcPost-7528468890159316992-eQ8q)
-
----
-
 ## 🎯 Brief-to-Feature Problem Alignment
 
 | Prompt Challenge 6 Requirement | Implemented Feature in AirWise | Code Location |
