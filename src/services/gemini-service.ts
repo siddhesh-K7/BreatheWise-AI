@@ -20,7 +20,7 @@ import { sanitizeUserPrompt, structuredPlanOutputSchema } from '@/validators/sch
 import { appCache } from './cache';
 import { generateDeterministicFallbackPlan } from './fallback-plan';
 
-const AI_MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+const AI_MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 
 /**
  * Wraps a promise with a hard timeout to guard against hung upstream connections.
@@ -114,8 +114,8 @@ async function executePlanGenerationWithRetry(
   const candidateModels = Array.from(
     new Set([
       AI_MODEL_NAME,
-      'gemini-3.1-flash-lite',
       'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite',
       'gemini-3.8-flash',
     ])
   );
@@ -247,8 +247,8 @@ Security Rules:
   const candidateModels = Array.from(
     new Set([
       AI_MODEL_NAME,
-      'gemini-3.1-flash-lite',
       'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite',
       'gemini-3.8-flash',
     ])
   );
@@ -299,9 +299,12 @@ Security Rules:
   );
 }
 
+/**
+ * Creates a one-shot ReadableStream for offline fallback messages.
+ */
 function createStaticStream(text: string): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
-  return new ReadableStream({
+  return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(encoder.encode(text));
       controller.close();
