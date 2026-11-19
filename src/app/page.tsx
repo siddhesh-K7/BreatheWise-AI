@@ -12,6 +12,7 @@ import { HazardousBanner } from '@/components/aqi/HazardousBanner';
 import { InversionCard } from '@/components/aqi/InversionCard';
 import { StationCrossCheckCard } from '@/components/aqi/StationCrossCheckCard';
 import { AqiOverview } from '@/components/aqi/AqiOverview';
+import { SmartFamilyDashboard } from '@/components/aqi/SmartFamilyDashboard';
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PlanDisplay } from '@/components/plan/PlanDisplay';
 import { WhatIfSimulator } from '@/components/simulator/WhatIfSimulator';
@@ -95,6 +96,14 @@ export default function Home() {
             t={t}
           />
         )}
+
+        {/* Smart Family Protection Dashboard (MongoDB + Multi-Module) */}
+        <SmartFamilyDashboard
+          reading={reading}
+          weather={weather}
+          location={location}
+          language={language}
+        />
 
         {/* Meteorological Inversion & Air Quality Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
