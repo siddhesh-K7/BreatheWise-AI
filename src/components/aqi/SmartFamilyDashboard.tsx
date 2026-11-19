@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, CalendarCheck, Home, Leaf, AlertTriangle, Building2 } from 'lucide-react';
+import { ShieldCheck, CalendarCheck, Home, Leaf, AlertTriangle, Building2, Check, ArrowRight } from 'lucide-react';
 import { SupportedLanguage } from '@/domain/types';
 
 interface SmartDashboardProps {
@@ -82,7 +84,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
   const isUnhealthy = aqi > 100;
 
   return (
-    <section className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl" aria-label="Smart Family Protection Dashboard">
+    <section className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-md" aria-label="Smart Family Protection Dashboard">
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
@@ -90,14 +92,14 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
             <ShieldCheck className="w-4 h-4" />
             <span>MongoDB-Powered Intelligence Hub</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white">Your Family&apos;s Air Quality Action Today</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Your Family&apos;s Air Quality Action Today</h2>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Tailored for {profile?.name || 'Your Household'} • {location.name} (AQI {aqi})
           </p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex flex-wrap gap-2 text-xs font-semibold">
+        <div className="flex flex-wrap gap-2 text-xs font-semibold" role="tablist">
           {[
             { id: 'action', label: 'Action Directives', icon: ShieldCheck },
             { id: 'routine', label: 'Daily Routine', icon: CalendarCheck },
@@ -107,22 +109,25 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
             { id: 'alerts', label: 'Alerts', icon: AlertTriangle }
           ].map((tab) => {
             const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => {
                   setActiveTab(tab.id as any);
                   if (tab.id === 'cities' && citiesData.length === 0) {
                     loadCityComparison();
                   }
                 }}
-                className={`px-3 py-2 rounded-xl flex items-center space-x-1.5 transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-emerald-600 text-white shadow-sm'
+                className={`px-3.5 py-2 rounded-xl flex items-center space-x-2 transition-all duration-150 min-h-[40px] cursor-pointer ${
+                  isActive
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-950/40 ring-1 ring-emerald-400/30'
                     : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-4 h-4 shrink-0" />
                 <span>{tab.label}</span>
               </button>
             );
@@ -133,7 +138,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
       {/* Tab 1: Personalized Action Directives */}
       {activeTab === 'action' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700/60 space-y-2">
+          <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2 hover:border-slate-600 transition-colors">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Outdoor Safety</span>
             <h3 className="text-sm font-bold text-white">
               {isSevere ? 'Avoid Strenuous Outdoor Exertion' : isUnhealthy ? 'Limit Outdoor Recess to <25 mins' : 'Outdoor Exercise Permitted'}
@@ -145,7 +150,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700/60 space-y-2">
+          <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2 hover:border-slate-600 transition-colors">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Indoor Sanctuary</span>
             <h3 className="text-sm font-bold text-white">Wet Mopping & Kitchen Exhaust</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -153,7 +158,7 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-800/50 border border-slate-700/60 space-y-2">
+          <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2 hover:border-slate-600 transition-colors">
             <span className="text-xs font-bold uppercase tracking-wider text-teal-400">Mobility Directive</span>
             <h3 className="text-sm font-bold text-white">Cabin Recirculation & Metro Transit</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -168,28 +173,37 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span>Synchronized with diurnal ground-inversion curves</span>
-            <span>{routineTasks.filter((t) => t.completed).length} of {routineTasks.length} Completed</span>
+            <span className="font-semibold text-slate-300">
+              {routineTasks.filter((t) => t.completed).length} of {routineTasks.length} Completed
+            </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {routineTasks.map((task) => (
               <div
                 key={task.id}
                 onClick={() => toggleTask(task.id, task.completed)}
-                className={`p-4 rounded-xl border cursor-pointer flex items-start justify-between gap-3 transition-colors ${
-                  task.completed ? 'bg-emerald-950/40 border-emerald-800/80' : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800'
+                className={`p-4 rounded-xl border cursor-pointer flex items-start justify-between gap-3 transition-all duration-150 ${
+                  task.completed
+                    ? 'bg-emerald-950/40 border-emerald-800/80'
+                    : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800/70 hover:border-slate-600'
                 }`}
               >
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-700/80 text-slate-300">
                     {task.phase}
                   </span>
                   <h4 className={`text-xs font-bold ${task.completed ? 'line-through text-slate-400' : 'text-white'}`}>
                     {task.title}
                   </h4>
-                  <p className="text-xs text-slate-400">{task.description}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed">{task.description}</p>
                 </div>
-                <div className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${task.completed ? 'bg-emerald-600 border-emerald-500 text-white' : 'border-slate-600'}`}>
-                  {task.completed && '✓'}
+                <div
+                  className={`w-6 h-6 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                    task.completed ? 'bg-emerald-600 border-emerald-500 text-white shadow-sm' : 'border-slate-600 bg-slate-900/50'
+                  }`}
+                  aria-hidden="true"
+                >
+                  {task.completed && <Check className="w-3.5 h-3.5" />}
                 </div>
               </div>
             ))}
@@ -197,33 +211,39 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
         </div>
       )}
 
-      {/* Tab 3: Indoor Air Quality Hacks (3 Tiers: Free, <₹500, Premium) */}
+      {/* Tab 3: Indoor Air Quality Hacks */}
       {activeTab === 'indoor' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3">
-            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-emerald-900/60 text-emerald-300">FREE ($0)</span>
+          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3 hover:border-slate-600 transition-colors">
+            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-emerald-900/60 text-emerald-300 border border-emerald-700/40">
+              FREE ($0)
+            </span>
             <h3 className="text-sm font-bold text-white">Damp Microfiber Mopping</h3>
-            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside leading-relaxed">
               <li>Mop floors with slightly damp cloths once daily</li>
               <li>Eliminates dry broom particulate resuspension</li>
               <li>Run kitchen exhaust 2 mins prior to gas cooking</li>
             </ul>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3">
-            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-teal-900/60 text-teal-300">UNDER ₹500</span>
+          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3 hover:border-slate-600 transition-colors">
+            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-teal-900/60 text-teal-300 border border-teal-700/40">
+              UNDER ₹500
+            </span>
             <h3 className="text-sm font-bold text-white">Draft Sealing & DIY Pre-filters</h3>
-            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside leading-relaxed">
               <li>Adhesive door draft sweeps on outer entryways</li>
               <li>Silicone window frame weatherstripping tapes</li>
               <li>Washable nylon mesh pre-filter covers</li>
             </ul>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3">
-            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-sky-900/60 text-sky-300">PREMIUM HEPA</span>
+          <div className="p-5 rounded-2xl bg-slate-800/40 border border-slate-700 space-y-3 hover:border-slate-600 transition-colors">
+            <span className="text-xs font-bold uppercase px-2.5 py-0.5 rounded bg-sky-900/60 text-sky-300 border border-sky-700/40">
+              PREMIUM HEPA
+            </span>
             <h3 className="text-sm font-bold text-white">Mechanical True-HEPA CADR</h3>
-            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <ul className="text-xs text-slate-300 space-y-1.5 list-disc list-inside leading-relaxed">
               <li>99.97% physical particle capture down to 0.3µm</li>
               <li>Zero ozone generation risk (Avoid ionizers)</li>
               <li>Match Clean Air Delivery Rate to bedroom size</li>
@@ -238,20 +258,20 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
           <h3 className="text-sm font-bold text-white">Quantified Transport Decarbonization Calculator</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
-              <label className="block text-slate-400 mb-1">One-Way Commute (km)</label>
+              <label className="block text-slate-400 mb-1.5 font-medium">One-Way Commute (km)</label>
               <input
                 type="number"
                 value={transportDist}
                 onChange={(e) => setTransportDist(Number(e.target.value) || 1)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
               />
             </div>
             <div>
-              <label className="block text-slate-400 mb-1">Proposed Alternative</label>
+              <label className="block text-slate-400 mb-1.5 font-medium">Proposed Alternative</label>
               <select
                 value={transportMode}
                 onChange={(e) => setTransportMode(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white"
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="metro">Electric Metro (0.029 kg CO2e/km)</option>
                 <option value="bus">Municipal Bus (0.082 kg CO2e/km)</option>
@@ -262,14 +282,15 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
             <div className="flex items-end">
               <button
                 onClick={calculateSavings}
-                className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold"
+                className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold min-h-[42px] cursor-pointer transition-colors shadow-md flex items-center justify-center gap-1.5"
               >
-                Calculate & Save to MongoDB
+                <span>Calculate & Save to DB</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
           {savedCo2 !== null && (
-            <div className="p-3 bg-emerald-950/60 border border-emerald-800 rounded-xl text-xs text-emerald-300 flex items-center justify-between">
+            <div className="p-3.5 bg-emerald-950/60 border border-emerald-800/80 rounded-xl text-xs text-emerald-300 flex items-center justify-between">
               <span>Trip Avoidance: <strong>{savedCo2} kg CO2e</strong></span>
               <span>Monthly Projected Savings: <strong>{(savedCo2 * 5 * 4.33).toFixed(1)} kg CO2e</strong></span>
             </div>
@@ -282,10 +303,10 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
         <div className="space-y-3">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {citiesData.map((c, i) => (
-              <div key={i} className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-xs">
+              <div key={i} className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 text-xs hover:border-slate-600 transition-colors">
                 <span className="font-bold text-white block">{c.city}</span>
-                <span className="text-slate-400 block text-[11px]">PM2.5: {c.pm25} µg/m³</span>
-                <span className="font-bold text-emerald-400 mt-1 block">AQI {c.usAqi}</span>
+                <span className="text-slate-400 block text-[11px] mt-0.5">PM2.5: {c.pm25} µg/m³</span>
+                <span className="font-bold text-emerald-400 mt-1.5 block">AQI {c.usAqi}</span>
               </div>
             ))}
           </div>
@@ -297,11 +318,11 @@ export const SmartFamilyDashboard: React.FC<SmartDashboardProps> = ({ reading, l
         <div className="space-y-2 text-xs">
           {alerts.length > 0 ? (
             alerts.map((a, i) => (
-              <div key={i} className="p-3 rounded-xl bg-amber-950/40 border border-amber-800 text-amber-200 flex items-start space-x-2">
+              <div key={i} className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-800 text-amber-200 flex items-start space-x-2.5">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
                 <div>
                   <span className="font-bold block">{a.city} • AQI {a.currentAqi}</span>
-                  <p className="text-amber-300/80">{a.message}</p>
+                  <p className="text-amber-300/80 mt-0.5">{a.message}</p>
                 </div>
               </div>
             ))

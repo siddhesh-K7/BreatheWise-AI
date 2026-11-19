@@ -11,6 +11,7 @@ interface NavbarProps {
 
 /**
  * Main application navigation header with localized language controls.
+ * Enhanced with subtle glassmorphism and WCAG tactile controls.
  */
 export function Navbar({ currentLanguage, onLanguageChange }: NavbarProps) {
   const languages: { code: SupportedLanguage; label: string }[] = [
@@ -21,20 +22,20 @@ export function Navbar({ currentLanguage, onLanguageChange }: NavbarProps) {
 
   return (
     <nav
-      className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40"
+      className="border-b border-slate-800/90 bg-slate-950/85 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200"
       aria-label="Main Navigation"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-md shadow-emerald-950/50">
-            <Wind className="w-6 h-6" aria-hidden="true" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-md shadow-emerald-950/50 ring-1 ring-emerald-400/30">
+            <Wind className="w-5 h-5 text-slate-950" aria-hidden="true" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg sm:text-xl text-white tracking-tight">
+              <span className="font-extrabold text-lg sm:text-xl text-white tracking-tight">
                 AirWise
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-emerald-950 border border-emerald-700/60 text-emerald-300">
+              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-600/60 text-emerald-300">
                 Live Open-Meteo
               </span>
             </div>
@@ -46,7 +47,7 @@ export function Navbar({ currentLanguage, onLanguageChange }: NavbarProps) {
 
         {/* Language selector */}
         <div
-          className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800"
+          className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner"
           role="group"
           aria-label="Language selection"
         >
@@ -56,10 +57,10 @@ export function Navbar({ currentLanguage, onLanguageChange }: NavbarProps) {
               <button
                 key={lang.code}
                 onClick={() => onLanguageChange(lang.code)}
-                className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-colors min-h-[36px] ${
+                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-150 min-h-[38px] cursor-pointer ${
                   isActive
-                    ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                    ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-400/40'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/70'
                 }`}
                 aria-pressed={isActive}
               >

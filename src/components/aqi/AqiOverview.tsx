@@ -12,6 +12,7 @@ interface AqiOverviewProps {
 
 /**
  * Visual breakdown of live air quality indices, pollutant telemetry, and hourly curves.
+ * Enhanced with clean card elevation and responsive metric typography.
  */
 export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
   const pollutants = [
@@ -25,15 +26,15 @@ export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
 
   return (
     <section
-      className="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm"
+      className="p-6 sm:p-7 rounded-3xl border border-slate-800 bg-slate-900/70 backdrop-blur-md shadow-lg"
       aria-labelledby="aqi-overview-heading"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-800/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1.5">
             <h2
               id="aqi-overview-heading"
-              className="text-xl sm:text-2xl font-bold text-white tracking-tight"
+              className="text-xl sm:text-2xl font-black text-white tracking-tight"
             >
               {location.cityName}
             </h2>
@@ -45,7 +46,7 @@ export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
             <Activity className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
             <span>{t.liveTelemetry}</span>
             <span>•</span>
-            <span>
+            <span className="font-mono">
               {new Date(reading.timestamp).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -57,7 +58,7 @@ export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
         <div className="flex items-center gap-4">
           <div className="text-right">
             <span
-              className="text-4xl sm:text-5xl font-black text-white tracking-tight"
+              className="text-4xl sm:text-5xl font-black text-white tracking-tight font-mono"
               aria-label={`US AQI ${reading.usAqi}`}
             >
               {reading.usAqi}
@@ -73,10 +74,13 @@ export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
       {/* Pollutant Matrix */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
         {pollutants.map((p) => (
-          <div key={p.label} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+          <div
+            key={p.label}
+            className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors"
+          >
             <span className="text-xs text-slate-400 font-medium block">{p.label}</span>
             <div className="flex items-baseline gap-1 my-1">
-              <span className="text-lg font-bold text-white">{p.value}</span>
+              <span className="text-lg font-bold text-white font-mono">{p.value}</span>
               <span className="text-[10px] text-slate-400">{p.unit}</span>
             </div>
             <span className="text-[10px] text-slate-400 truncate block">{p.desc}</span>
@@ -105,9 +109,9 @@ export function AqiOverview({ location, reading, t }: AqiOverviewProps) {
               >
                 <div
                   style={{ height: `${heightPct}%` }}
-                  className="w-full bg-slate-700 hover:bg-emerald-500 rounded-t transition-all"
+                  className="w-full bg-slate-700/80 hover:bg-emerald-500 rounded-t transition-all duration-150 cursor-pointer"
                 />
-                <span className="text-[9px] text-slate-400 mt-1 truncate">
+                <span className="text-[9px] text-slate-400 mt-1 truncate font-mono">
                   {sample.time.split('T')[1]?.slice(0, 2) || `${idx}h`}
                 </span>
               </div>
